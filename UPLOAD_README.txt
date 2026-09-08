@@ -1,11 +1,13 @@
-Kyle Fit V6 GitHub Pages files
+Kyle Fit V7 — Login + Supabase Cloud
 
-Upload these files to the ROOT of your existing GitHub repository:
-- index.html
-- manifest.webmanifest
-- sw.js
-- icon-180.png
-- icon-192.png
-- icon-512.png
+Upload ALL files to the root of your existing GitHub Pages repository and replace old versions.
 
-Replace the old files with these versions.
+After deploy:
+1. Open the GitHub Pages URL.
+2. Create an account.
+3. If Supabase email confirmation is enabled, confirm the email.
+4. Log in.
+5. New workout/weight records sync to Supabase.
+6. Settings > 迁移本机旧数据 can upload old local V6 records.
+
+Supabase project is already configured in index.html with the publishable key only.
