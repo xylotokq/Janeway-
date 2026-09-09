@@ -1808,12 +1808,12 @@ async function runWeeklyMetricsTest(){
   btn.textContent="计算中…";
 
   try{
-    const {data,error}=await sb.functions.invoke("weekly-metrics",{
+    const {data,error}=await sb.functions.invoke("bright-handler",{
       body:{}
     });
 
     if(error){
-      console.error("weekly-metrics invoke error:",error);
+      console.error("bright-handler (weekly-metrics) invoke error:",error);
       let msg=error.message||"调用失败";
 
       try{
