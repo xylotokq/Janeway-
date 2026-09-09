@@ -749,6 +749,71 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
   .nav button{font-size:8.5px!important}
 }
 
+
+/* V9.9.1 chat scroll hotfix
+   Do NOT lock the whole coach page. The page can scroll normally;
+   only the message thread gets its own bounded scroll area. */
+#coach.active{
+  overflow:visible !important;
+}
+
+#coach .coach-page{
+  height:auto !important;
+  max-height:none !important;
+  min-height:calc(100dvh - 150px) !important;
+  display:block !important;
+  overflow:visible !important;
+  padding-bottom:calc(92px + env(safe-area-inset-bottom)) !important;
+}
+
+#coach .coach-thread{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:9px !important;
+  height:auto !important;
+  min-height:180px !important;
+  max-height:min(46dvh,520px) !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  overscroll-behavior-y:contain !important;
+  -webkit-overflow-scrolling:touch !important;
+  touch-action:pan-y !important;
+  padding:8px 2px 14px !important;
+}
+
+#coach #proposalArea{
+  max-height:none !important;
+  overflow:visible !important;
+}
+
+#coach .coach-composer{
+  position:sticky !important;
+  bottom:calc(72px + env(safe-area-inset-bottom)) !important;
+  width:100% !important;
+  background:linear-gradient(180deg,rgba(13,17,23,0),rgba(13,17,23,.98) 20%) !important;
+  padding:18px 0 8px !important;
+  z-index:25 !important;
+}
+
+/* Ensure proposal cards themselves never become a hidden clipped viewport. */
+#coach .proposal-wrap,
+#coach .proposal-card{
+  overflow:visible !important;
+  max-height:none !important;
+}
+
+@media(max-width:420px){
+  #coach .coach-page{
+    height:auto !important;
+    max-height:none !important;
+    min-height:calc(100dvh - 138px) !important;
+  }
+  #coach .coach-thread{
+    min-height:170px !important;
+    max-height:42dvh !important;
+  }
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -757,7 +822,7 @@ window.addEventListener("DOMContentLoaded", function(){
   setTimeout(function(){
     var sp=document.getElementById("splash");
     if(sp) sp.classList.add("hide");
-  },2200);
+  },550);
 });
 </script>
 </head>
@@ -803,7 +868,7 @@ window.addEventListener("DOMContentLoaded", function(){
 <div id="onboardScreen" class="onboard-screen">
   <div class="onboard-card">
     <div class="brand-row" style="margin-bottom:8px">
-      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=990" alt="小臭">
+      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=991" alt="小臭">
       <div>
         <h2 style="margin:0">先告诉我一点基本信息</h2>
         <div class="small">填完后直接进入小臭，由 AI 继续跟你聊并制定方案。</div>
@@ -2081,7 +2146,7 @@ async function routeUserFlow(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=990";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=991";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}}
     document.getElementById("onboardScreen").classList.add("show");
@@ -2108,7 +2173,7 @@ async function routeUserFlow(){
 
   revealApp();
   const ci=document.getElementById("coachAvatar");
-  if(ci)ci.src="./xiaochou.jpg?v=990";
+  if(ci)ci.src="./xiaochou.jpg?v=991";
 
   appBrandLoaded=false;
   updateDynamicPlanTitle(true).catch(console.error);
@@ -2203,7 +2268,7 @@ function appendCoachBubble(role,content,{pending=false}={}){
     row.className="msg-row assistant";
     const img=document.createElement("img");
     img.className="msg-agent-avatar";
-    img.src="./xiaochou.jpg?v=990";
+    img.src="./xiaochou.jpg?v=991";
     img.alt="小臭";
     const msg=document.createElement("div");
     msg.className="msg assistant"+(pending?" pending":"");
@@ -2958,7 +3023,7 @@ window.addEventListener("load",()=>{
   setTimeout(()=>splash && splash.classList.add("hide"),1550);
 });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=990").catch(()=>{}));
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=991").catch(()=>{}));
 }
 
 </script>
