@@ -814,6 +814,82 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
   }
 }
 
+
+/* V9.9.2 mobile = one scroll container only */
+@media(max-width:700px){
+
+  #coach,
+  #coach.active{
+    overflow:visible !important;
+  }
+
+  #coach .coach-page{
+    display:block !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    overflow:visible !important;
+    padding-bottom:calc(110px + env(safe-area-inset-bottom)) !important;
+  }
+
+  /* On mobile the conversation is part of the page flow.
+     No second scroll box, no reserved empty viewport. */
+  #coach .coach-thread{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:9px !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    overflow:visible !important;
+    overscroll-behavior:auto !important;
+    touch-action:auto !important;
+    padding:8px 2px 10px !important;
+  }
+
+  #coach #proposalArea,
+  #coach .proposal-wrap{
+    display:block !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    overflow:visible !important;
+    margin:10px 0 14px !important;
+  }
+
+  #coach #proposalBtn{
+    display:block;
+    position:relative !important;
+    margin:14px 0 12px !important;
+  }
+
+  /* Normal document flow is more reliable with iOS keyboard than sticky
+     inside a PWA page that also has a fixed bottom nav. */
+  #coach .coach-composer{
+    position:relative !important;
+    top:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    left:auto !important;
+    width:100% !important;
+    margin:0 0 12px !important;
+    padding:4px 0 !important;
+    background:#0d1117 !important;
+    z-index:2 !important;
+  }
+
+  #coach .coach-inputrow{
+    width:100% !important;
+    box-sizing:border-box !important;
+  }
+
+  #coach .coach-input{
+    min-height:44px !important;
+    max-height:100px !important;
+    font-size:16px !important;
+  }
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -868,7 +944,7 @@ window.addEventListener("DOMContentLoaded", function(){
 <div id="onboardScreen" class="onboard-screen">
   <div class="onboard-card">
     <div class="brand-row" style="margin-bottom:8px">
-      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=991" alt="小臭">
+      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=992" alt="小臭">
       <div>
         <h2 style="margin:0">先告诉我一点基本信息</h2>
         <div class="small">填完后直接进入小臭，由 AI 继续跟你聊并制定方案。</div>
@@ -2146,7 +2222,7 @@ async function routeUserFlow(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=991";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=992";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}}
     document.getElementById("onboardScreen").classList.add("show");
@@ -2173,7 +2249,7 @@ async function routeUserFlow(){
 
   revealApp();
   const ci=document.getElementById("coachAvatar");
-  if(ci)ci.src="./xiaochou.jpg?v=991";
+  if(ci)ci.src="./xiaochou.jpg?v=992";
 
   appBrandLoaded=false;
   updateDynamicPlanTitle(true).catch(console.error);
@@ -2256,7 +2332,10 @@ function renderCoachMessages(items){
 function coachScrollToBottom(behavior="smooth"){
   const box=document.getElementById("coachThread");
   if(!box)return;
-  requestAnimationFrame(()=>box.scrollTo({top:box.scrollHeight,behavior}));
+  requestAnimationFrame(()=>{
+    const hasOwnScroll=box.scrollHeight>box.clientHeight+8;
+    if(hasOwnScroll) box.scrollTo({top:box.scrollHeight,behavior});
+  });
 }
 function appendCoachBubble(role,content,{pending=false}={}){
   const box=document.getElementById("coachThread");
@@ -2268,7 +2347,7 @@ function appendCoachBubble(role,content,{pending=false}={}){
     row.className="msg-row assistant";
     const img=document.createElement("img");
     img.className="msg-agent-avatar";
-    img.src="./xiaochou.jpg?v=991";
+    img.src="./xiaochou.jpg?v=992";
     img.alt="小臭";
     const msg=document.createElement("div");
     msg.className="msg assistant"+(pending?" pending":"");
@@ -2300,7 +2379,7 @@ function updateChatViewport(){
   document.documentElement.style.setProperty("--chat-vvh",`${h}px`);
 }
 if(window.visualViewport){
-  visualViewport.addEventListener("resize",()=>{updateChatViewport();if(document.getElementById("coach")?.classList.contains("active"))coachScrollToBottom("auto")});
+  visualViewport.addEventListener("resize",()=>{updateChatViewport()});
   visualViewport.addEventListener("scroll",updateChatViewport);
 }
 window.addEventListener("resize",updateChatViewport);
@@ -3004,7 +3083,6 @@ function resetData(){
   });
   input.addEventListener("focus",()=>{
     updateChatViewport();
-    setTimeout(()=>coachScrollToBottom("auto"),80);
   });
   input.addEventListener("keydown",e=>{
     if(e.key==="Enter"&&!e.shiftKey){
@@ -3023,7 +3101,7 @@ window.addEventListener("load",()=>{
   setTimeout(()=>splash && splash.classList.add("hide"),1550);
 });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=991").catch(()=>{}));
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=992").catch(()=>{}));
 }
 
 </script>
