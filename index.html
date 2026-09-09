@@ -890,6 +890,97 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
   }
 }
 
+
+/* V9.9.3 - mobile chat composer behaves like a native messenger */
+:root{
+  --mobile-nav-h:72px;
+  --coach-composer-h:68px;
+  --keyboard-offset:0px;
+}
+
+@media(max-width:700px){
+  /* One page scroll only */
+  #coach,
+  #coach.active,
+  #coach .coach-page,
+  #coach .coach-thread,
+  #coach #proposalArea,
+  #coach .proposal-wrap,
+  #coach .proposal-card{
+    overflow:visible !important;
+    max-height:none !important;
+  }
+
+  #coach .coach-page{
+    display:block !important;
+    height:auto !important;
+    min-height:calc(100dvh - 120px) !important;
+    padding-bottom:calc(var(--coach-composer-h) + var(--mobile-nav-h) + env(safe-area-inset-bottom) + 32px) !important;
+  }
+
+  #coach .coach-thread{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:9px !important;
+    height:auto !important;
+    min-height:0 !important;
+    touch-action:auto !important;
+  }
+
+  /* Fixed composer: above nav when keyboard closed */
+  #coach .coach-composer{
+    position:fixed !important;
+    left:50% !important;
+    right:auto !important;
+    top:auto !important;
+    bottom:calc(var(--mobile-nav-h) + env(safe-area-inset-bottom)) !important;
+    transform:translateX(-50%) !important;
+    width:min(100%,620px) !important;
+    box-sizing:border-box !important;
+    margin:0 !important;
+    padding:8px 14px !important;
+    background:rgba(13,17,23,.98) !important;
+    border-top:1px solid rgba(255,255,255,.06);
+    z-index:120 !important;
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+  }
+
+  #coach .coach-inputrow{
+    width:100% !important;
+    box-sizing:border-box !important;
+    margin:0 !important;
+  }
+
+  #coach .coach-input{
+    min-height:46px !important;
+    max-height:104px !important;
+    font-size:16px !important;
+    line-height:1.35 !important;
+  }
+
+  /* Keyboard open: hide app nav and pin composer to keyboard top */
+  body.keyboard-open .nav{
+    display:none !important;
+  }
+
+  body.keyboard-open #coach .coach-composer{
+    bottom:var(--keyboard-offset) !important;
+    padding-bottom:8px !important;
+  }
+
+  body.keyboard-open #coach .coach-page{
+    padding-bottom:calc(var(--coach-composer-h) + 24px) !important;
+  }
+
+  /* prevent latest bubble from sitting behind fixed composer */
+  #coach .msg,
+  #coach .msg-row,
+  #coach #proposalArea{
+    scroll-margin-bottom:calc(var(--coach-composer-h) + 24px);
+  }
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -944,7 +1035,7 @@ window.addEventListener("DOMContentLoaded", function(){
 <div id="onboardScreen" class="onboard-screen">
   <div class="onboard-card">
     <div class="brand-row" style="margin-bottom:8px">
-      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=992" alt="小臭">
+      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=993" alt="小臭">
       <div>
         <h2 style="margin:0">先告诉我一点基本信息</h2>
         <div class="small">填完后直接进入小臭，由 AI 继续跟你聊并制定方案。</div>
@@ -2222,7 +2313,7 @@ async function routeUserFlow(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=992";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=993";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}}
     document.getElementById("onboardScreen").classList.add("show");
@@ -2249,7 +2340,7 @@ async function routeUserFlow(){
 
   revealApp();
   const ci=document.getElementById("coachAvatar");
-  if(ci)ci.src="./xiaochou.jpg?v=992";
+  if(ci)ci.src="./xiaochou.jpg?v=993";
 
   appBrandLoaded=false;
   updateDynamicPlanTitle(true).catch(console.error);
@@ -2332,6 +2423,15 @@ function renderCoachMessages(items){
 function coachScrollToBottom(behavior="smooth"){
   const box=document.getElementById("coachThread");
   if(!box)return;
+
+  if(window.matchMedia("(max-width:700px)").matches){
+    const last=box.lastElementChild;
+    if(last){
+      requestAnimationFrame(()=>last.scrollIntoView({behavior,block:"end",inline:"nearest"}));
+    }
+    return;
+  }
+
   requestAnimationFrame(()=>{
     const hasOwnScroll=box.scrollHeight>box.clientHeight+8;
     if(hasOwnScroll) box.scrollTo({top:box.scrollHeight,behavior});
@@ -2347,20 +2447,20 @@ function appendCoachBubble(role,content,{pending=false}={}){
     row.className="msg-row assistant";
     const img=document.createElement("img");
     img.className="msg-agent-avatar";
-    img.src="./xiaochou.jpg?v=992";
+    img.src="./xiaochou.jpg?v=993";
     img.alt="小臭";
     const msg=document.createElement("div");
     msg.className="msg assistant"+(pending?" pending":"");
     msg.textContent=content;
     row.appendChild(img);row.appendChild(msg);box.appendChild(row);
-    coachScrollToBottom();
+    scrollLatestCoachIntoView();
     return row;
   }
   const msg=document.createElement("div");
   msg.className=`msg ${role||"user"}${pending?" pending":""}`;
   msg.textContent=content;
   box.appendChild(msg);
-  coachScrollToBottom();
+  scrollLatestCoachIntoView();
   return msg;
 }
 function getCoachCache(){return store.get("coachCache",[])}
@@ -2375,15 +2475,53 @@ function renderCachedCoachImmediately(){
   if(cached?.length){renderCoachMessages(cached);coachScrollToBottom("auto")}
 }
 function updateChatViewport(){
-  const h=window.visualViewport?.height||window.innerHeight;
-  document.documentElement.style.setProperty("--chat-vvh",`${h}px`);
+  const vv=window.visualViewport;
+  const viewportH=vv?.height||window.innerHeight;
+  const offsetTop=vv?.offsetTop||0;
+
+  document.documentElement.style.setProperty("--chat-vvh",`${viewportH}px`);
+
+  // iOS Safari overlays the keyboard on the layout viewport.
+  // This value is the covered area at the bottom of the layout viewport.
+  const covered=Math.max(0,window.innerHeight-(viewportH+offsetTop));
+  document.documentElement.style.setProperty("--keyboard-offset",`${covered}px`);
+
+  const keyboardOpen=covered>120;
+  document.body.classList.toggle("keyboard-open",keyboardOpen);
 }
 if(window.visualViewport){
-  visualViewport.addEventListener("resize",()=>{updateChatViewport()});
+  visualViewport.addEventListener("resize",updateChatViewport);
   visualViewport.addEventListener("scroll",updateChatViewport);
 }
 window.addEventListener("resize",updateChatViewport);
 updateChatViewport();
+
+function syncCoachComposerHeight(){
+  const composer=document.querySelector("#coach .coach-composer");
+  if(!composer)return;
+  const h=Math.ceil(composer.getBoundingClientRect().height);
+  if(h>0)document.documentElement.style.setProperty("--coach-composer-h",`${h}px`);
+}
+
+function scrollLatestCoachIntoView(behavior="smooth"){
+  if(window.matchMedia("(max-width:700px)").matches){
+    const box=document.getElementById("coachThread");
+    const last=box?.lastElementChild;
+    if(last){
+      requestAnimationFrame(()=>{
+        last.scrollIntoView({behavior,block:"end",inline:"nearest"});
+      });
+    }
+    return;
+  }
+  coachScrollToBottom(behavior);
+}
+
+window.addEventListener("load",()=>{
+  syncCoachComposerHeight();
+  updateChatViewport();
+});
+
 
 async function loadCoachHistory(){
   if(!currentUser||!sb)return;
@@ -2611,7 +2749,7 @@ async function confirmProposalPlan(){
 
 function useQuickPrompt(t){const i=document.getElementById("coachInput");i.value=t;i.focus()}
 function appendCoachError(t){const b=document.getElementById("coachThread"),d=document.createElement("div");d.className="msg error";d.textContent=t;b.appendChild(d)}
-function showTyping(){const b=document.getElementById("coachThread");if(!b)return;document.getElementById("coachTyping")?.remove();const d=document.createElement("div");d.id="coachTyping";d.className="typing";d.innerHTML="<i></i><i></i><i></i>";b.appendChild(d);coachScrollToBottom()}
+function showTyping(){const b=document.getElementById("coachThread");if(!b)return;document.getElementById("coachTyping")?.remove();const d=document.createElement("div");d.id="coachTyping";d.className="typing";d.innerHTML="<i></i><i></i><i></i>";b.appendChild(d);scrollLatestCoachIntoView()}
 function hideTyping(){document.getElementById("coachTyping")?.remove()}
 
 async function sendCoachMessage(){
@@ -3041,9 +3179,10 @@ function showPage(id){
  if(id==="coach"){
    setCoachAvatar();
    updateChatViewport();
+   syncCoachComposerHeight();
    renderCachedCoachImmediately();
    loadCoachHistory().catch(console.error);
-   coachScrollToBottom("auto");
+   scrollLatestCoachIntoView("auto");
    return;
  }
  window.scrollTo({top:0,behavior:"smooth"});
@@ -3079,10 +3218,19 @@ function resetData(){
   if(!input)return;
   input.addEventListener("input",()=>{
     input.style.height="auto";
-    input.style.height=Math.min(input.scrollHeight,110)+"px";
+    input.style.height=Math.min(input.scrollHeight,104)+"px";
+    syncCoachComposerHeight();
   });
   input.addEventListener("focus",()=>{
     updateChatViewport();
+    syncCoachComposerHeight();
+    setTimeout(()=>scrollLatestCoachIntoView("auto"),120);
+  });
+  input.addEventListener("blur",()=>{
+    setTimeout(()=>{
+      updateChatViewport();
+      syncCoachComposerHeight();
+    },80);
   });
   input.addEventListener("keydown",e=>{
     if(e.key==="Enter"&&!e.shiftKey){
@@ -3101,7 +3249,7 @@ window.addEventListener("load",()=>{
   setTimeout(()=>splash && splash.classList.add("hide"),1550);
 });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=992").catch(()=>{}));
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=993").catch(()=>{}));
 }
 
 </script>
