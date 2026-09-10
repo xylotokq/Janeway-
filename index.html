@@ -1227,6 +1227,100 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
   }
 }
 
+
+/* =========================================================
+   V10.3.1 iOS keyboard stability
+   Do not fix the whole coach screen.
+   Let visualViewport control only the flex shell height.
+   ========================================================= */
+:root{
+  --v1031-chat-h:100dvh;
+  --v1031-nav-h:74px;
+}
+
+@media(max-width:700px){
+
+  html,body{
+    overscroll-behavior:none;
+  }
+
+  body.v103-coach-open{
+    overflow:hidden !important;
+    height:100dvh !important;
+  }
+
+  /* Important: no fixed positioning on the whole coach screen. */
+  body.v103-coach-open #coach.active{
+    display:block !important;
+    position:relative !important;
+    inset:auto !important;
+    left:auto !important;
+    right:auto !important;
+    top:auto !important;
+    bottom:auto !important;
+    width:100% !important;
+    max-width:none !important;
+    height:calc(var(--v1031-chat-h) - var(--v1031-nav-h)) !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    background:#0d1117 !important;
+    z-index:1 !important;
+    transform:none !important;
+  }
+
+  body.v103-coach-open.v103-keyboard #coach.active{
+    height:var(--v1031-chat-h) !important;
+  }
+
+  body.v103-coach-open #coach .coach-page{
+    display:flex !important;
+    flex-direction:column !important;
+    position:relative !important;
+    inset:auto !important;
+    width:min(100%,620px) !important;
+    height:100% !important;
+    min-height:0 !important;
+    max-height:none !important;
+    margin:0 auto !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    transform:none !important;
+    box-sizing:border-box !important;
+  }
+
+  body.v103-coach-open #coach .coach-head{
+    flex:0 0 auto !important;
+    position:relative !important;
+    inset:auto !important;
+    transform:none !important;
+  }
+
+  body.v103-coach-open #coach .coach-scroll-pane{
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    position:relative !important;
+    inset:auto !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    touch-action:pan-y !important;
+  }
+
+  body.v103-coach-open #coach .coach-composer{
+    flex:0 0 auto !important;
+    position:relative !important;
+    inset:auto !important;
+    bottom:auto !important;
+    transform:none !important;
+  }
+
+  body.v103-keyboard .nav{
+    display:none !important;
+  }
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1281,7 +1375,7 @@ window.addEventListener("DOMContentLoaded", function(){
 <div id="onboardScreen" class="onboard-screen">
   <div class="onboard-card">
     <div class="brand-row" style="margin-bottom:8px">
-      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1030" alt="小臭">
+      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1031" alt="小臭">
       <div>
         <h2 style="margin:0">先告诉我一点基本信息</h2>
         <div class="small">填完后直接进入小臭，由 AI 继续跟你聊并制定方案。</div>
@@ -2562,7 +2656,7 @@ async function routeUserFlow(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=1030";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1031";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}}
     document.getElementById("onboardScreen").classList.add("show");
@@ -2589,7 +2683,7 @@ async function routeUserFlow(){
 
   revealApp();
   const ci=document.getElementById("coachAvatar");
-  if(ci)ci.src="./xiaochou.jpg?v=1030";
+  if(ci)ci.src="./xiaochou.jpg?v=1031";
 
   appBrandLoaded=false;
   updateDynamicPlanTitle(true).catch(console.error);
@@ -2696,7 +2790,7 @@ function appendCoachBubble(role,content,{pending=false}={}){
     row.className="msg-row assistant";
     const img=document.createElement("img");
     img.className="msg-agent-avatar";
-    img.src="./xiaochou.jpg?v=1030";
+    img.src="./xiaochou.jpg?v=1031";
     img.alt="小臭";
     const msg=document.createElement("div");
     msg.className="msg assistant"+(pending?" pending":"");
@@ -3441,6 +3535,7 @@ function showPage(id){
   if(isCoach){
     setCoachAvatar();
     v103Init();
+    v103RememberBaseline();
     v103SyncViewport();
 
     renderCachedCoachImmediately();
@@ -3834,7 +3929,7 @@ routeUserFlow=async function(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=1030";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1031";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){
       try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}
@@ -3896,8 +3991,9 @@ afterLogin=async function(){
 /* ===== V10.3 mature mobile chat runtime ===== */
 let v103StickBottom=true;
 let v103Initialized=false;
-let v103LastViewportHeight=0;
-const V103_DRAFT_KEY="kyleFitCoachDraftV103";
+let v103BaselineHeight=0;
+let v103LastHeight=0;
+const V103_DRAFT_KEY="kyleFitCoachDraftV1031";
 
 function v103Pane(){
   return document.getElementById("coachScrollPane");
@@ -3913,40 +4009,67 @@ function v103ScrollBottom(behavior="auto",force=false){
   const pane=v103Pane();
   if(!pane)return;
   if(!force&&!v103StickBottom)return;
+  requestAnimationFrame(()=>pane.scrollTo({top:pane.scrollHeight,behavior}));
+}
 
-  requestAnimationFrame(()=>{
-    pane.scrollTo({
-      top:pane.scrollHeight,
-      behavior
-    });
-  });
+function v103CurrentVisualHeight(){
+  return Math.max(280,Math.round(window.visualViewport?.height||window.innerHeight));
+}
+
+function v103RememberBaseline(){
+  const h=v103CurrentVisualHeight();
+  if(!document.body.classList.contains("v103-keyboard")){
+    v103BaselineHeight=Math.max(v103BaselineHeight,h);
+  }
 }
 
 function v103SyncViewport(){
   if(!window.matchMedia("(max-width:700px)").matches)return;
 
-  const vv=window.visualViewport;
-  const h=Math.max(300,Math.round(vv?.height||window.innerHeight));
+  const h=v103CurrentVisualHeight();
   const nav=document.querySelector(".nav");
   const navH=Math.ceil(nav?.getBoundingClientRect().height||74);
-
-  document.documentElement.style.setProperty("--v103-vh",h+"px");
-  document.documentElement.style.setProperty("--v103-nav-h",navH+"px");
-
   const input=document.getElementById("coachInput");
   const focused=document.activeElement===input;
 
-  /* Keyboards reduce visualViewport.height.
-     We do not calculate a bottom offset at all. */
-  const keyboardOpen=focused && h < window.innerHeight-100;
-  document.body.classList.toggle("v103-keyboard",keyboardOpen);
+  /* Capture the no-keyboard height before focus / after blur.
+     iOS PWA can shrink window.innerHeight together with visualViewport,
+     so comparing those two values is unreliable. */
+  if(!focused && h>v103BaselineHeight){
+    v103BaselineHeight=h;
+  }
+  if(!v103BaselineHeight){
+    v103BaselineHeight=h;
+  }
 
-  if(v103LastViewportHeight!==h){
-    v103LastViewportHeight=h;
+  const shrink=v103BaselineHeight-h;
+  const keyboardOpen=focused && shrink>120;
+
+  document.body.classList.toggle("v103-keyboard",keyboardOpen);
+  document.documentElement.style.setProperty("--v1031-chat-h",h+"px");
+  document.documentElement.style.setProperty("--v1031-nav-h",navH+"px");
+
+  /* iOS may pan the document when focusing an input. Pull the layout
+     back to the top; the scrollable message pane retains its own position. */
+  if(keyboardOpen && window.scrollY!==0){
+    window.scrollTo(0,0);
+  }
+
+  if(v103LastHeight!==h){
+    v103LastHeight=h;
     if(v103StickBottom){
       requestAnimationFrame(()=>v103ScrollBottom("auto",true));
     }
   }
+}
+
+function v103TrackViewport(ms=700){
+  const end=performance.now()+ms;
+  const tick=()=>{
+    v103SyncViewport();
+    if(performance.now()<end)requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
 }
 
 function v103Init(){
@@ -3956,6 +4079,8 @@ function v103Init(){
   const pane=v103Pane();
   const input=document.getElementById("coachInput");
   if(!pane||!input)return;
+
+  v103BaselineHeight=v103CurrentVisualHeight();
 
   pane.addEventListener("scroll",()=>{
     v103StickBottom=v103NearBottom(90);
@@ -3967,11 +4092,12 @@ function v103Init(){
 
   input.addEventListener("focus",()=>{
     v103StickBottom=v103NearBottom(150);
-    v103SyncViewport();
 
-    /* iOS updates visualViewport during the keyboard animation.
-       A few reads are enough; no manual keyboard offset is applied. */
-    [0,50,120,220,360,520].forEach(ms=>{
+    /* Baseline MUST be saved before keyboard finishes opening. */
+    if(!v103BaselineHeight)v103BaselineHeight=v103CurrentVisualHeight();
+
+    v103TrackViewport(900);
+    [0,40,80,140,220,340,500,700,900].forEach(ms=>{
       setTimeout(()=>{
         v103SyncViewport();
         if(v103StickBottom)v103ScrollBottom("auto",true);
@@ -3980,7 +4106,13 @@ function v103Init(){
   });
 
   input.addEventListener("blur",()=>{
-    [0,80,180,320].forEach(ms=>setTimeout(v103SyncViewport,ms));
+    document.body.classList.remove("v103-keyboard");
+    [0,80,180,320,520].forEach(ms=>{
+      setTimeout(()=>{
+        v103SyncViewport();
+        v103RememberBaseline();
+      },ms);
+    });
   });
 
   input.addEventListener("input",()=>{
@@ -4001,12 +4133,23 @@ function v103Init(){
 }
 
 if(window.visualViewport){
-  visualViewport.addEventListener("resize",v103SyncViewport,{passive:true});
-  visualViewport.addEventListener("scroll",v103SyncViewport,{passive:true});
-}
-window.addEventListener("resize",v103SyncViewport,{passive:true});
+  visualViewport.addEventListener("resize",()=>{
+    v103SyncViewport();
+    v103TrackViewport(180);
+  },{passive:true});
 
-/* Reuse the established chat code, only change scrolling behavior. */
+  visualViewport.addEventListener("scroll",()=>{
+    v103SyncViewport();
+  },{passive:true});
+}
+
+window.addEventListener("resize",()=>{
+  v103SyncViewport();
+  if(document.activeElement!==document.getElementById("coachInput")){
+    v103RememberBaseline();
+  }
+},{passive:true});
+
 coachScrollToBottom=function(behavior="smooth"){
   v103ScrollBottom(behavior,false);
 };
@@ -4024,7 +4167,7 @@ window.addEventListener("load",()=>{
   setTimeout(()=>splash && splash.classList.add("hide"),350);
 });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1030").catch(()=>{}));
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1031").catch(()=>{}));
 }
 
 </script>
