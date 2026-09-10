@@ -1198,6 +1198,56 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
   .msg.assistant{border-bottom-left-radius:5px!important}
 }
 
+
+/* ===== V10.1.1 iPhone chat layout hotfix ===== */
+@media(max-width:700px){
+  #coach .coach-page{
+    box-sizing:border-box!important;
+  }
+
+  #coach .coach-scroll-pane{
+    display:flex!important;
+    flex-direction:column!important;
+    box-sizing:border-box!important;
+  }
+
+  /* Flexible spacer: fills only unused room.
+     When conversation is long it shrinks to zero. */
+  #coach .coach-scroll-pane::before{
+    content:"";
+    display:block;
+    flex:1 0 0px;
+    min-height:0;
+  }
+
+  #coach #setupNote,
+  #coach #coachWelcome,
+  #coach .quick-prompts,
+  #coach .coach-thread,
+  #coach #proposalArea,
+  #coach #proposalBtn,
+  #coach #coachBottomSentinel{
+    flex:0 0 auto;
+  }
+
+  #coach .coach-composer{
+    box-sizing:border-box!important;
+  }
+
+  /* Remove legacy extra whitespace that can survive from older mobile layers. */
+  body.coach-screen #coach .coach-scroll-pane{
+    padding-bottom:12px!important;
+  }
+
+  body.coach-screen:not(.keyboard-open) #coach .coach-page{
+    padding-bottom:var(--coach-nav-height)!important;
+  }
+
+  body.coach-screen.keyboard-open #coach .coach-page{
+    padding-bottom:0!important;
+  }
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1252,7 +1302,7 @@ window.addEventListener("DOMContentLoaded", function(){
 <div id="onboardScreen" class="onboard-screen">
   <div class="onboard-card">
     <div class="brand-row" style="margin-bottom:8px">
-      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1010" alt="小臭">
+      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1011" alt="小臭">
       <div>
         <h2 style="margin:0">先告诉我一点基本信息</h2>
         <div class="small">填完后直接进入小臭，由 AI 继续跟你聊并制定方案。</div>
@@ -2533,7 +2583,7 @@ async function routeUserFlow(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=1010";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1011";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}}
     document.getElementById("onboardScreen").classList.add("show");
@@ -2560,7 +2610,7 @@ async function routeUserFlow(){
 
   revealApp();
   const ci=document.getElementById("coachAvatar");
-  if(ci)ci.src="./xiaochou.jpg?v=1010";
+  if(ci)ci.src="./xiaochou.jpg?v=1011";
 
   appBrandLoaded=false;
   updateDynamicPlanTitle(true).catch(console.error);
@@ -2667,7 +2717,7 @@ function appendCoachBubble(role,content,{pending=false}={}){
     row.className="msg-row assistant";
     const img=document.createElement("img");
     img.className="msg-agent-avatar";
-    img.src="./xiaochou.jpg?v=1010";
+    img.src="./xiaochou.jpg?v=1011";
     img.alt="小臭";
     const msg=document.createElement("div");
     msg.className="msg assistant"+(pending?" pending":"");
@@ -3785,7 +3835,7 @@ routeUserFlow=async function(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=1010";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1011";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){
       try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}
@@ -3849,27 +3899,66 @@ let coachStickToBottom=true;
 let coachSavedScrollTop=0;
 let coachStreamRAF=0;
 let coachStreamQueuedText="";
-const COACH_DRAFT_KEY="kyleFitCoachDraftV101";
+const COACH_DRAFT_KEY="kyleFitCoachDraftV1011";
+
+let coachViewportTrackRAF=0;
+let coachViewportTrackUntil=0;
+let coachLastVVSignature="";
+
+function applyCoachVisualViewportV1011(){
+  if(!window.matchMedia("(max-width:700px)").matches)return;
+
+  const coach=document.getElementById("coach");
+  if(!coach || !coach.classList.contains("active"))return;
+
+  const vv=window.visualViewport;
+  const top=Math.max(0,Math.round(vv?.offsetTop||0));
+  const h=Math.max(260,Math.round(vv?.height||window.innerHeight));
+
+  /* Direct inline geometry beats delayed CSS/layout recalculation on iOS. */
+  coach.style.setProperty("top",top+"px","important");
+  coach.style.setProperty("height",h+"px","important");
+
+  document.documentElement.style.setProperty("--coach-vv-top",top+"px");
+  document.documentElement.style.setProperty("--coach-vv-height",h+"px");
+
+  const focused=document.activeElement===document.getElementById("coachInput");
+  const covered=Math.max(0,window.innerHeight-(top+h));
+  document.body.classList.toggle("keyboard-open",focused && covered>90);
+
+  const sig=top+"|"+h+"|"+covered;
+  if(sig!==coachLastVVSignature){
+    coachLastVVSignature=sig;
+    if(coachStickToBottom){
+      requestAnimationFrame(()=>scrollCoachBottomV101("auto",true));
+    }
+  }
+}
+
+function trackCoachViewportV1011(ms=650){
+  coachViewportTrackUntil=performance.now()+ms;
+  if(coachViewportTrackRAF)return;
+
+  const tick=()=>{
+    coachViewportTrackRAF=0;
+    applyCoachVisualViewportV1011();
+    if(performance.now()<coachViewportTrackUntil){
+      coachViewportTrackRAF=requestAnimationFrame(tick);
+    }
+  };
+  coachViewportTrackRAF=requestAnimationFrame(tick);
+}
+
 
 function coachPane(){return document.getElementById("coachScrollPane")}
 
 function syncCoachViewportV101(){
-  const vv=window.visualViewport;
-  const top=Math.max(0,Math.round(vv?.offsetTop||0));
-  const h=Math.max(320,Math.round(vv?.height||window.innerHeight));
-  document.documentElement.style.setProperty("--coach-vv-top",top+"px");
-  document.documentElement.style.setProperty("--coach-vv-height",h+"px");
-
   const nav=document.querySelector(".nav");
   if(nav){
     const nh=Math.ceil(nav.getBoundingClientRect().height);
     if(nh>0)document.documentElement.style.setProperty("--coach-nav-height",nh+"px");
   }
-
-  const layoutH=window.innerHeight;
-  const covered=Math.max(0,layoutH-(h+top));
-  const focused=document.activeElement===document.getElementById("coachInput");
-  document.body.classList.toggle("keyboard-open",focused && covered>100);
+  applyCoachVisualViewportV1011();
 }
 
 function isCoachNearBottom(threshold=90){
@@ -3919,20 +4008,23 @@ function initCoachPaneV101(){
   });
 
   input.addEventListener("focus",()=>{
-    coachStickToBottom=isCoachNearBottom(140);
-    syncCoachViewportV101();
-    setTimeout(()=>{
-      syncCoachViewportV101();
-      if(coachStickToBottom)scrollCoachBottomV101("auto",true);
-    },90);
-    setTimeout(()=>{
-      syncCoachViewportV101();
-      if(coachStickToBottom)scrollCoachBottomV101("auto",true);
-    },260);
+    coachStickToBottom=isCoachNearBottom(160);
+
+    /* iOS keyboard animation changes visualViewport over several frames.
+       Track the full animation instead of waiting for the user to scroll. */
+    trackCoachViewportV1011(750);
+
+    [0,40,90,160,260,420,650].forEach(delay=>{
+      setTimeout(()=>{
+        applyCoachVisualViewportV1011();
+        if(coachStickToBottom)scrollCoachBottomV101("auto",true);
+      },delay);
+    });
   });
 
   input.addEventListener("blur",()=>{
-    setTimeout(syncCoachViewportV101,80);
+    trackCoachViewportV1011(450);
+    [0,80,180,360].forEach(delay=>setTimeout(applyCoachVisualViewportV1011,delay));
   });
 }
 
@@ -4029,6 +4121,7 @@ showPage=function(id){
   if(nowCoach){
     initCoachPaneV101();
     syncCoachViewportV101();
+    trackCoachViewportV1011(320);
     const p=coachPane();
     requestAnimationFrame(()=>{
       if(!p)return;
@@ -4047,14 +4140,23 @@ showPage=function(id){
 
 if(window.visualViewport){
   visualViewport.addEventListener("resize",()=>{
-    syncCoachViewportV101();
-    if(document.body.classList.contains("coach-screen")&&coachStickToBottom){
-      requestAnimationFrame(()=>scrollCoachBottomV101("auto",true));
-    }
+    applyCoachVisualViewportV1011();
+    trackCoachViewportV1011(220);
   },{passive:true});
-  visualViewport.addEventListener("scroll",syncCoachViewportV101,{passive:true});
+
+  visualViewport.addEventListener("scroll",()=>{
+    applyCoachVisualViewportV1011();
+  },{passive:true});
 }
-window.addEventListener("resize",syncCoachViewportV101,{passive:true});
+
+window.addEventListener("resize",()=>{
+  applyCoachVisualViewportV1011();
+  trackCoachViewportV1011(220);
+},{passive:true});
+
+document.addEventListener("focusin",e=>{
+  if(e.target?.id==="coachInput")trackCoachViewportV1011(750);
+});
 
 window.addEventListener("load",()=>{
   initCoachPaneV101();
@@ -4070,7 +4172,7 @@ window.addEventListener("load",()=>{
   setTimeout(()=>splash && splash.classList.add("hide"),350);
 });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1010").catch(()=>{}));
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1011").catch(()=>{}));
 }
 
 </script>

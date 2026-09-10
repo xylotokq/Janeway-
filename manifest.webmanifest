@@ -2,7 +2,7 @@
   "name": "Kyle Fit",
   "short_name": "Kyle Fit",
   "description": "AI fitness training and weekly review app",
-  "start_url": "./?v=1010",
+  "start_url": "./?v=1011",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0b0f14",
