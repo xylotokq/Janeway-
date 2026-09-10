@@ -1039,6 +1039,165 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
 }
 @keyframes coachCaret{50%{opacity:0}}
 
+
+/* ===== V10.1 Chat V2: mobile native-like interaction ===== */
+:root{
+  --coach-vv-top:0px;
+  --coach-vv-height:100dvh;
+  --coach-composer-height:68px;
+  --coach-nav-height:76px;
+}
+
+.coach-scroll-pane{min-height:0}
+.coach-bottom-sentinel{height:1px;width:100%}
+
+@media(max-width:700px){
+  /* Coach becomes its own screen. It no longer participates in the normal page scroll. */
+  #coach.active{
+    display:block!important;
+    position:fixed!important;
+    left:0!important;
+    right:0!important;
+    top:var(--coach-vv-top)!important;
+    height:var(--coach-vv-height)!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    background:#0d1117!important;
+    overflow:hidden!important;
+    z-index:95!important;
+  }
+
+  #coach .coach-page{
+    width:min(620px,100%)!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+    margin:0 auto!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-rows:auto minmax(0,1fr) auto!important;
+    overflow:hidden!important;
+    background:#0d1117!important;
+  }
+
+  #coach .coach-head{
+    flex:none!important;
+    margin:0!important;
+    padding:calc(12px + env(safe-area-inset-top)) 16px 10px!important;
+    background:rgba(13,17,23,.97)!important;
+    border-bottom:1px solid rgba(255,255,255,.06)!important;
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    z-index:3;
+  }
+
+  #coach .coach-scroll-pane{
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior-y:contain!important;
+    touch-action:pan-y!important;
+    padding:12px 14px 22px!important;
+    scroll-behavior:auto!important;
+    scrollbar-width:none;
+  }
+  #coach .coach-scroll-pane::-webkit-scrollbar{display:none}
+
+  /* Thread is content, not another scroll view. */
+  #coach .coach-thread{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:10px!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+    padding:4px 0 8px!important;
+    overscroll-behavior:auto!important;
+    touch-action:auto!important;
+  }
+
+  #coach #proposalArea,
+  #coach .proposal-wrap,
+  #coach .proposal-card{
+    height:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+
+  #coach .quick-prompts{
+    display:flex!important;
+    gap:7px!important;
+    overflow-x:auto!important;
+    padding-bottom:4px!important;
+    scrollbar-width:none;
+  }
+  #coach .quick-prompts::-webkit-scrollbar{display:none}
+  #coach .quick-prompt{flex:0 0 auto!important}
+
+  #coach .coach-composer{
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    width:100%!important;
+    margin:0!important;
+    padding:8px 12px calc(8px + env(safe-area-inset-bottom))!important;
+    background:rgba(13,17,23,.98)!important;
+    border-top:1px solid rgba(255,255,255,.07)!important;
+    z-index:4!important;
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+  }
+
+  #coach .coach-inputrow{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:end!important;
+    gap:8px!important;
+    width:100%!important;
+  }
+
+  #coach .coach-input{
+    width:100%!important;
+    min-width:0!important;
+    min-height:44px!important;
+    max-height:108px!important;
+    padding:11px 13px!important;
+    margin:0!important;
+    border-radius:18px!important;
+    font-size:16px!important;
+    line-height:1.4!important;
+    resize:none!important;
+    overflow-y:auto!important;
+    transition:height .08s ease-out,border-color .15s ease,background .15s ease!important;
+  }
+
+  #coach .coach-send{
+    min-width:64px!important;
+    min-height:44px!important;
+    margin:0!important;
+    border-radius:16px!important;
+  }
+
+  /* Bottom app nav stays only when keyboard is closed. */
+  body.coach-screen .nav{
+    z-index:96!important;
+  }
+  body.coach-screen:not(.keyboard-open) #coach .coach-page{
+    padding-bottom:calc(var(--coach-nav-height) + env(safe-area-inset-bottom))!important;
+  }
+  body.keyboard-open .nav{display:none!important}
+  body.keyboard-open #coach .coach-page{padding-bottom:0!important}
+  body.keyboard-open #coach .coach-head{padding-top:10px!important}
+
+  .msg{max-width:88%!important}
+  .msg.user{border-bottom-right-radius:5px!important}
+  .msg.assistant{border-bottom-left-radius:5px!important}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1093,7 +1252,7 @@ window.addEventListener("DOMContentLoaded", function(){
 <div id="onboardScreen" class="onboard-screen">
   <div class="onboard-card">
     <div class="brand-row" style="margin-bottom:8px">
-      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1001" alt="小臭">
+      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1010" alt="小臭">
       <div>
         <h2 style="margin:0">先告诉我一点基本信息</h2>
         <div class="small">填完后直接进入小臭，由 AI 继续跟你聊并制定方案。</div>
@@ -1227,20 +1386,23 @@ window.addEventListener("DOMContentLoaded", function(){
         <span class="coach-online">在线</span>
       </div>
     </div>
-    <div id="setupNote" class="setup-note" style="display:none">先和 AI 把方案聊清楚。确认计划后，训练主页才会正式开放。</div>
-    <div id="coachWelcome" class="coach-welcome">
-      <strong>先从你的真实情况开始</strong>
-      <p>你可以直接说目标、训练时间、器械条件、最想改善的部位，或者最近遇到的问题。AI 会先追问必要信息，不会立刻把方案写死。</p>
+    <div id="coachScrollPane" class="coach-scroll-pane">
+      <div id="setupNote" class="setup-note" style="display:none">先和 AI 把方案聊清楚。确认计划后，训练主页才会正式开放。</div>
+      <div id="coachWelcome" class="coach-welcome">
+        <strong>先从你的真实情况开始</strong>
+        <p>你可以直接说目标、训练时间、器械条件、最想改善的部位，或者最近遇到的问题。AI 会先追问必要信息，不会立刻把方案写死。</p>
+      </div>
+      <div class="quick-prompts">
+        <button class="quick-prompt" onclick="useQuickPrompt('我想减脂，同时尽量保持肌肉。')">减脂保肌</button>
+        <button class="quick-prompt" onclick="useQuickPrompt('帮我根据每周可训练时间安排训练结构。')">安排训练周</button>
+        <button class="quick-prompt" onclick="useQuickPrompt('我有一些动作做起来不舒服，想找替代动作。')">动作替代</button>
+        <button class="quick-prompt" onclick="useQuickPrompt('我想重新制定一个新的训练计划。')">重新规划</button>
+      </div>
+      <div id="coachThread" class="coach-thread"></div>
+      <div id="proposalArea" class="proposal-wrap"></div>
+      <button id="proposalBtn" class="proposal-cta" onclick="generateProposal()">生成详细 Proposal</button>
+      <div id="coachBottomSentinel" class="coach-bottom-sentinel" aria-hidden="true"></div>
     </div>
-    <div class="quick-prompts">
-      <button class="quick-prompt" onclick="useQuickPrompt('我想减脂，同时尽量保持肌肉。')">减脂保肌</button>
-      <button class="quick-prompt" onclick="useQuickPrompt('帮我根据每周可训练时间安排训练结构。')">安排训练周</button>
-      <button class="quick-prompt" onclick="useQuickPrompt('我有一些动作做起来不舒服，想找替代动作。')">动作替代</button>
-      <button class="quick-prompt" onclick="useQuickPrompt('我想重新制定一个新的训练计划。')">重新规划</button>
-    </div>
-    <div id="coachThread" class="coach-thread"></div>
-    <div id="proposalArea" class="proposal-wrap"></div>
-    <button id="proposalBtn" class="proposal-cta" onclick="generateProposal()">生成详细 Proposal</button>
     <div class="coach-composer">
       <div class="coach-inputrow">
         <textarea id="coachInput" class="coach-input" rows="1" placeholder="告诉小臭你的训练目标或问题…"></textarea>
@@ -2371,7 +2533,7 @@ async function routeUserFlow(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=1001";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1010";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}}
     document.getElementById("onboardScreen").classList.add("show");
@@ -2398,7 +2560,7 @@ async function routeUserFlow(){
 
   revealApp();
   const ci=document.getElementById("coachAvatar");
-  if(ci)ci.src="./xiaochou.jpg?v=1001";
+  if(ci)ci.src="./xiaochou.jpg?v=1010";
 
   appBrandLoaded=false;
   updateDynamicPlanTitle(true).catch(console.error);
@@ -2505,7 +2667,7 @@ function appendCoachBubble(role,content,{pending=false}={}){
     row.className="msg-row assistant";
     const img=document.createElement("img");
     img.className="msg-agent-avatar";
-    img.src="./xiaochou.jpg?v=1001";
+    img.src="./xiaochou.jpg?v=1010";
     img.alt="小臭";
     const msg=document.createElement("div");
     msg.className="msg assistant"+(pending?" pending":"");
@@ -3623,7 +3785,7 @@ routeUserFlow=async function(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=1001";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1010";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){
       try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}
@@ -3681,6 +3843,224 @@ afterLogin=async function(){
   setTimeout(()=>syncFromCloud().catch(console.error),0);
 };
 
+
+/* ===== V10.1 Chat V2 runtime ===== */
+let coachStickToBottom=true;
+let coachSavedScrollTop=0;
+let coachStreamRAF=0;
+let coachStreamQueuedText="";
+const COACH_DRAFT_KEY="kyleFitCoachDraftV101";
+
+function coachPane(){return document.getElementById("coachScrollPane")}
+
+function syncCoachViewportV101(){
+  const vv=window.visualViewport;
+  const top=Math.max(0,Math.round(vv?.offsetTop||0));
+  const h=Math.max(320,Math.round(vv?.height||window.innerHeight));
+  document.documentElement.style.setProperty("--coach-vv-top",top+"px");
+  document.documentElement.style.setProperty("--coach-vv-height",h+"px");
+
+  const nav=document.querySelector(".nav");
+  if(nav){
+    const nh=Math.ceil(nav.getBoundingClientRect().height);
+    if(nh>0)document.documentElement.style.setProperty("--coach-nav-height",nh+"px");
+  }
+
+  const layoutH=window.innerHeight;
+  const covered=Math.max(0,layoutH-(h+top));
+  const focused=document.activeElement===document.getElementById("coachInput");
+  document.body.classList.toggle("keyboard-open",focused && covered>100);
+}
+
+function isCoachNearBottom(threshold=90){
+  const p=coachPane();
+  if(!p)return true;
+  return p.scrollHeight-p.scrollTop-p.clientHeight<threshold;
+}
+
+function scrollCoachBottomV101(behavior="auto",force=false){
+  const p=coachPane();
+  if(!p)return;
+  if(!force && !coachStickToBottom)return;
+  requestAnimationFrame(()=>{
+    p.scrollTo({top:p.scrollHeight,behavior});
+  });
+}
+
+function initCoachPaneV101(){
+  const p=coachPane();
+  const input=document.getElementById("coachInput");
+  if(!p||!input||p.dataset.v101Ready)return;
+  p.dataset.v101Ready="1";
+
+  p.addEventListener("scroll",()=>{
+    coachStickToBottom=isCoachNearBottom();
+    coachSavedScrollTop=p.scrollTop;
+  },{passive:true});
+
+  p.addEventListener("touchstart",()=>{
+    /* User interaction wins over auto-follow immediately. */
+    coachStickToBottom=isCoachNearBottom(50);
+  },{passive:true});
+
+  let draft="";
+  try{draft=localStorage.getItem(COACH_DRAFT_KEY)||""}catch(e){}
+  if(draft&&!input.value){
+    input.value=draft;
+    input.style.height="auto";
+    input.style.height=Math.min(input.scrollHeight,108)+"px";
+  }
+
+  input.addEventListener("input",()=>{
+    input.style.height="auto";
+    input.style.height=Math.min(input.scrollHeight,108)+"px";
+    try{localStorage.setItem(COACH_DRAFT_KEY,input.value)}catch(e){}
+    syncCoachViewportV101();
+  });
+
+  input.addEventListener("focus",()=>{
+    coachStickToBottom=isCoachNearBottom(140);
+    syncCoachViewportV101();
+    setTimeout(()=>{
+      syncCoachViewportV101();
+      if(coachStickToBottom)scrollCoachBottomV101("auto",true);
+    },90);
+    setTimeout(()=>{
+      syncCoachViewportV101();
+      if(coachStickToBottom)scrollCoachBottomV101("auto",true);
+    },260);
+  });
+
+  input.addEventListener("blur",()=>{
+    setTimeout(syncCoachViewportV101,80);
+  });
+}
+
+/* Replace old scrolling semantics: only the single coach pane scrolls. */
+coachScrollToBottom=function(behavior="smooth"){
+  scrollCoachBottomV101(behavior,false);
+};
+scrollLatestCoachIntoView=function(behavior="smooth"){
+  scrollCoachBottomV101(behavior,false);
+};
+
+/* Batched stream painting: at most one DOM write per animation frame. */
+function queueCoachStreamPaintV101(msg,text){
+  coachStreamQueuedText=text;
+  if(coachStreamRAF)return;
+  coachStreamRAF=requestAnimationFrame(()=>{
+    coachStreamRAF=0;
+    msg.textContent=coachStreamQueuedText;
+    if(coachStickToBottom)scrollCoachBottomV101("auto");
+  });
+}
+
+if(typeof v10ReadStream==="function"){
+  v10ReadStream=async function(resp,msg){
+    const reader=resp.body?.getReader();
+    if(!reader)throw new Error("当前浏览器无法读取流式回复");
+    const decoder=new TextDecoder();
+    let full="";
+    msg.textContent="";
+    msg.classList.add("streaming");
+
+    while(true){
+      const {done,value}=await reader.read();
+      if(done)break;
+      const chunk=decoder.decode(value,{stream:true});
+      if(!chunk)continue;
+      full+=chunk;
+      queueCoachStreamPaintV101(msg,full);
+    }
+
+    if(coachStreamRAF){
+      cancelAnimationFrame(coachStreamRAF);
+      coachStreamRAF=0;
+    }
+    msg.textContent=full;
+    msg.classList.remove("streaming");
+    if(coachStickToBottom)scrollCoachBottomV101("auto");
+    return full.trim();
+  };
+}
+
+if(typeof v10AnimateText==="function"){
+  v10AnimateText=async function(text,msg){
+    if(!msg)return;
+    msg.classList.add("streaming");
+    msg.textContent="";
+    const chunks=Math.max(1,Math.min(24,Math.ceil(text.length/18)));
+    const step=Math.ceil(text.length/chunks);
+    let shown="";
+    for(let i=0;i<text.length;i+=step){
+      shown+=text.slice(i,i+step);
+      queueCoachStreamPaintV101(msg,shown);
+      await new Promise(r=>setTimeout(r,16));
+    }
+    msg.textContent=text;
+    msg.classList.remove("streaming");
+    if(coachStickToBottom)scrollCoachBottomV101("auto");
+  };
+}
+
+/* Preserve draft clearing exactly when a send starts. */
+const v101OriginalSendCoachMessage=sendCoachMessage;
+sendCoachMessage=async function(){
+  const input=document.getElementById("coachInput");
+  const hasText=!!input?.value?.trim();
+  if(hasText){try{localStorage.removeItem(COACH_DRAFT_KEY)}catch(e){}}
+  coachStickToBottom=true;
+  return v101OriginalSendCoachMessage();
+};
+
+/* Enter/leave coach screen without leaking page scroll behavior into chat. */
+const v101OriginalShowPage=showPage;
+showPage=function(id){
+  const wasCoach=document.getElementById("coach")?.classList.contains("active");
+  if(wasCoach && id!=="coach"){
+    const p=coachPane();
+    if(p)coachSavedScrollTop=p.scrollTop;
+  }
+
+  const result=v101OriginalShowPage(id);
+  const nowCoach=id==="coach" || document.getElementById("coach")?.classList.contains("active");
+  document.body.classList.toggle("coach-screen",!!nowCoach);
+
+  if(nowCoach){
+    initCoachPaneV101();
+    syncCoachViewportV101();
+    const p=coachPane();
+    requestAnimationFrame(()=>{
+      if(!p)return;
+      if(coachSavedScrollTop>0 && !coachStickToBottom){
+        p.scrollTop=coachSavedScrollTop;
+      }else{
+        coachStickToBottom=true;
+        scrollCoachBottomV101("auto",true);
+      }
+    });
+  }else{
+    document.body.classList.remove("keyboard-open");
+  }
+  return result;
+};
+
+if(window.visualViewport){
+  visualViewport.addEventListener("resize",()=>{
+    syncCoachViewportV101();
+    if(document.body.classList.contains("coach-screen")&&coachStickToBottom){
+      requestAnimationFrame(()=>scrollCoachBottomV101("auto",true));
+    }
+  },{passive:true});
+  visualViewport.addEventListener("scroll",syncCoachViewportV101,{passive:true});
+}
+window.addEventListener("resize",syncCoachViewportV101,{passive:true});
+
+window.addEventListener("load",()=>{
+  initCoachPaneV101();
+  syncCoachViewportV101();
+});
+
 document.getElementById("startDate").value=start;
 renderHome();renderToday(selectedDate);renderWeights();renderStats();
 initAuth();
@@ -3690,7 +4070,7 @@ window.addEventListener("load",()=>{
   setTimeout(()=>splash && splash.classList.add("hide"),350);
 });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1001").catch(()=>{}));
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1010").catch(()=>{}));
 }
 
 </script>
