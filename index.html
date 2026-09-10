@@ -1041,115 +1041,89 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
 
 
 /* =========================================================
-   V10.2 CLEAN MOBILE CHAT
-   One layout model only:
-   Header / one scroll pane / composer
+   V10.3 mature mobile chat architecture
+   Header / ONE scroll pane / composer
+   Composer is a normal flex child, never fixed or absolute.
    ========================================================= */
 :root{
-  --kx-chat-top:0px;
-  --kx-chat-header-h:78px;
-  --kx-chat-composer-h:66px;
-  --kx-chat-bottom:76px;
+  --v103-vh:100dvh;
+  --v103-nav-h:74px;
 }
 
 @media(max-width:700px){
 
-  body.coach-screen{
+  body.v103-coach-open{
     overflow:hidden !important;
-    position:fixed !important;
-    width:100% !important;
-    height:100% !important;
-    inset:0 !important;
   }
 
-  /* Full screen coach shell. Do not let any older page rules participate. */
-  body.coach-screen #coach.active{
+  body.v103-coach-open #coach.active{
     display:block !important;
     position:fixed !important;
-    top:var(--kx-chat-top) !important;
     left:0 !important;
     right:0 !important;
-    bottom:0 !important;
+    top:0 !important;
     width:100% !important;
+    height:calc(var(--v103-vh) - var(--v103-nav-h)) !important;
     max-width:none !important;
-    height:auto !important;
-    min-height:0 !important;
     margin:0 !important;
     padding:0 !important;
     overflow:hidden !important;
     background:#0d1117 !important;
-    z-index:300 !important;
+    z-index:250 !important;
   }
 
-  body.coach-screen #coach .coach-page{
-    display:block !important;
-    position:absolute !important;
-    inset:0 !important;
-    width:100% !important;
-    max-width:620px !important;
-    height:auto !important;
+  body.v103-coach-open.v103-keyboard #coach.active{
+    height:var(--v103-vh) !important;
+  }
+
+  body.v103-coach-open #coach .coach-page{
+    display:flex !important;
+    flex-direction:column !important;
+    width:min(100%,620px) !important;
+    height:100% !important;
     min-height:0 !important;
     max-height:none !important;
     margin:0 auto !important;
     padding:0 !important;
     overflow:hidden !important;
-    background:#0d1117 !important;
     box-sizing:border-box !important;
+    background:#0d1117 !important;
   }
 
-  /* Fixed header */
-  body.coach-screen #coach .coach-head{
-    position:absolute !important;
-    top:0 !important;
-    left:0 !important;
-    right:0 !important;
-    bottom:auto !important;
-    z-index:20 !important;
+  body.v103-coach-open #coach .coach-head{
+    flex:0 0 auto !important;
+    position:relative !important;
+    inset:auto !important;
     margin:0 !important;
     padding:calc(10px + env(safe-area-inset-top)) 16px 10px !important;
+    transform:none !important;
     background:rgba(13,17,23,.98) !important;
     border-bottom:1px solid rgba(255,255,255,.07) !important;
-    backdrop-filter:blur(18px) !important;
-    -webkit-backdrop-filter:blur(18px) !important;
+    backdrop-filter:blur(16px) !important;
+    -webkit-backdrop-filter:blur(16px) !important;
+    z-index:3 !important;
     box-sizing:border-box !important;
-    transform:none !important;
   }
 
-  /* The ONLY scrolling element in chat. */
-  body.coach-screen #coach .coach-scroll-pane{
-    display:block !important;
-    position:absolute !important;
-    top:var(--kx-chat-header-h) !important;
-    left:0 !important;
-    right:0 !important;
-    bottom:calc(var(--kx-chat-bottom) + var(--kx-chat-composer-h)) !important;
-    width:auto !important;
-    height:auto !important;
+  /* The only scrolling element */
+  body.v103-coach-open #coach .coach-scroll-pane{
+    flex:1 1 auto !important;
     min-height:0 !important;
-    max-height:none !important;
-    margin:0 !important;
-    padding:12px 16px 16px !important;
-    overflow-x:hidden !important;
+    width:100% !important;
     overflow-y:auto !important;
-    overscroll-behavior-y:contain !important;
+    overflow-x:hidden !important;
     -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior-y:contain !important;
     touch-action:pan-y !important;
-    scroll-behavior:auto !important;
+    padding:12px 16px 16px !important;
     box-sizing:border-box !important;
+    scroll-behavior:auto !important;
   }
 
-  /* No nested scroll areas or fake spacers. */
-  body.coach-screen #coach .coach-scroll-pane::before,
-  body.coach-screen #coach .coach-scroll-pane::after{
-    content:none !important;
-    display:none !important;
-  }
-
-  body.coach-screen #coach .coach-thread{
+  body.v103-coach-open #coach .coach-thread{
     display:flex !important;
     flex-direction:column !important;
     gap:10px !important;
-    position:static !important;
     width:100% !important;
     height:auto !important;
     min-height:0 !important;
@@ -1157,85 +1131,76 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
     margin:0 !important;
     padding:0 !important;
     overflow:visible !important;
-    touch-action:auto !important;
-    box-sizing:border-box !important;
   }
 
-  body.coach-screen #coach #setupNote,
-  body.coach-screen #coach #coachWelcome,
-  body.coach-screen #coach .quick-prompts,
-  body.coach-screen #coach #proposalArea,
-  body.coach-screen #coach .proposal-wrap,
-  body.coach-screen #coach .proposal-card,
-  body.coach-screen #coach #proposalBtn,
-  body.coach-screen #coach #coachBottomSentinel{
+  body.v103-coach-open #coach #setupNote,
+  body.v103-coach-open #coach #coachWelcome,
+  body.v103-coach-open #coach .quick-prompts,
+  body.v103-coach-open #coach #proposalArea,
+  body.v103-coach-open #coach .proposal-wrap,
+  body.v103-coach-open #coach .proposal-card,
+  body.v103-coach-open #coach #proposalBtn{
     position:static !important;
-    float:none !important;
-    clear:both !important;
+    inset:auto !important;
+    transform:none !important;
     width:100% !important;
-    height:auto !important;
-    min-height:0 !important;
     max-height:none !important;
     overflow:visible !important;
-    transform:none !important;
     box-sizing:border-box !important;
   }
 
-  body.coach-screen #coach #proposalArea{
+  body.v103-coach-open #coach #proposalArea{
     margin:12px 0 0 !important;
     padding:0 !important;
   }
 
-  body.coach-screen #coach #proposalBtn{
+  body.v103-coach-open #coach #proposalBtn{
     display:block;
-    margin:14px 0 2px !important;
-    inset:auto !important;
+    margin:14px 0 6px !important;
     z-index:auto !important;
   }
 
-  body.coach-screen #coach #coachBottomSentinel{
+  body.v103-coach-open #coach #coachBottomSentinel{
     display:block !important;
+    width:100% !important;
     height:1px !important;
-    margin:8px 0 0 !important;
+    margin:0 !important;
+    padding:0 !important;
   }
 
-  /* Fixed composer. Bottom var = nav height when closed, keyboard height when open. */
-  body.coach-screen #coach .coach-composer{
-    display:block !important;
-    position:absolute !important;
-    left:0 !important;
-    right:0 !important;
-    top:auto !important;
-    bottom:var(--kx-chat-bottom) !important;
+  /* Composer is NOT positioned. Flex keeps it at bottom naturally. */
+  body.v103-coach-open #coach .coach-composer{
+    flex:0 0 auto !important;
+    position:relative !important;
+    inset:auto !important;
     width:100% !important;
-    height:auto !important;
-    min-height:0 !important;
-    max-height:none !important;
     margin:0 !important;
-    padding:8px 14px 9px !important;
-    overflow:visible !important;
+    padding:8px 14px calc(8px + env(safe-area-inset-bottom)) !important;
+    transform:none !important;
     background:rgba(13,17,23,.99) !important;
     border-top:1px solid rgba(255,255,255,.07) !important;
-    backdrop-filter:blur(18px) !important;
-    -webkit-backdrop-filter:blur(18px) !important;
-    transform:none !important;
-    z-index:30 !important;
+    backdrop-filter:blur(16px) !important;
+    -webkit-backdrop-filter:blur(16px) !important;
+    z-index:4 !important;
     box-sizing:border-box !important;
   }
 
-  body.coach-screen #coach .coach-inputrow{
+  body.v103-coach-open.v103-keyboard #coach .coach-composer{
+    padding-bottom:8px !important;
+  }
+
+  body.v103-coach-open #coach .coach-inputrow{
     display:grid !important;
     grid-template-columns:minmax(0,1fr) auto !important;
-    align-items:end !important;
     gap:8px !important;
+    align-items:end !important;
     width:100% !important;
     margin:0 !important;
     padding:0 !important;
     box-sizing:border-box !important;
   }
 
-  body.coach-screen #coach .coach-input{
-    display:block !important;
+  body.v103-coach-open #coach .coach-input{
     width:100% !important;
     min-width:0 !important;
     min-height:46px !important;
@@ -1243,33 +1208,22 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
     max-height:108px !important;
     margin:0 !important;
     padding:12px 13px !important;
-    overflow-y:auto !important;
     resize:none !important;
+    overflow-y:auto !important;
     font-size:16px !important;
     line-height:1.35 !important;
     box-sizing:border-box !important;
   }
 
-  body.coach-screen #coach .coach-send{
-    min-width:72px !important;
+  body.v103-coach-open #coach .coach-send{
     height:46px !important;
+    min-width:72px !important;
     margin:0 !important;
     align-self:end !important;
   }
 
-  /* Keyboard owns the bottom. App nav disappears. */
-  body.coach-screen.keyboard-open .nav{
+  body.v103-keyboard .nav{
     display:none !important;
-  }
-
-  /* Keep nav beneath the fullscreen chat shell when closed. */
-  body.coach-screen:not(.keyboard-open) .nav{
-    z-index:310 !important;
-  }
-
-  body.coach-screen #coach .msg,
-  body.coach-screen #coach .msg-row{
-    scroll-margin-bottom:18px !important;
   }
 }
 
@@ -1327,7 +1281,7 @@ window.addEventListener("DOMContentLoaded", function(){
 <div id="onboardScreen" class="onboard-screen">
   <div class="onboard-card">
     <div class="brand-row" style="margin-bottom:8px">
-      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1020" alt="小臭">
+      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1030" alt="小臭">
       <div>
         <h2 style="margin:0">先告诉我一点基本信息</h2>
         <div class="small">填完后直接进入小臭，由 AI 继续跟你聊并制定方案。</div>
@@ -1461,20 +1415,23 @@ window.addEventListener("DOMContentLoaded", function(){
         <span class="coach-online">在线</span>
       </div>
     </div>
-    <div id="setupNote" class="setup-note" style="display:none">先和 AI 把方案聊清楚。确认计划后，训练主页才会正式开放。</div>
-    <div id="coachWelcome" class="coach-welcome">
-      <strong>先从你的真实情况开始</strong>
-      <p>你可以直接说目标、训练时间、器械条件、最想改善的部位，或者最近遇到的问题。AI 会先追问必要信息，不会立刻把方案写死。</p>
+    <div id="coachScrollPane" class="coach-scroll-pane">
+      <div id="setupNote" class="setup-note" style="display:none">先和 AI 把方案聊清楚。确认计划后，训练主页才会正式开放。</div>
+      <div id="coachWelcome" class="coach-welcome">
+        <strong>先从你的真实情况开始</strong>
+        <p>你可以直接说目标、训练时间、器械条件、最想改善的部位，或者最近遇到的问题。AI 会先追问必要信息，不会立刻把方案写死。</p>
+      </div>
+      <div class="quick-prompts">
+        <button class="quick-prompt" onclick="useQuickPrompt('我想减脂，同时尽量保持肌肉。')">减脂保肌</button>
+        <button class="quick-prompt" onclick="useQuickPrompt('帮我根据每周可训练时间安排训练结构。')">安排训练周</button>
+        <button class="quick-prompt" onclick="useQuickPrompt('我有一些动作做起来不舒服，想找替代动作。')">动作替代</button>
+        <button class="quick-prompt" onclick="useQuickPrompt('我想重新制定一个新的训练计划。')">重新规划</button>
+      </div>
+      <div id="coachThread" class="coach-thread"></div>
+      <div id="proposalArea" class="proposal-wrap"></div>
+      <button id="proposalBtn" class="proposal-cta" onclick="generateProposal()">生成详细 Proposal</button>
+      <div id="coachBottomSentinel" aria-hidden="true"></div>
     </div>
-    <div class="quick-prompts">
-      <button class="quick-prompt" onclick="useQuickPrompt('我想减脂，同时尽量保持肌肉。')">减脂保肌</button>
-      <button class="quick-prompt" onclick="useQuickPrompt('帮我根据每周可训练时间安排训练结构。')">安排训练周</button>
-      <button class="quick-prompt" onclick="useQuickPrompt('我有一些动作做起来不舒服，想找替代动作。')">动作替代</button>
-      <button class="quick-prompt" onclick="useQuickPrompt('我想重新制定一个新的训练计划。')">重新规划</button>
-    </div>
-    <div id="coachThread" class="coach-thread"></div>
-    <div id="proposalArea" class="proposal-wrap"></div>
-    <button id="proposalBtn" class="proposal-cta" onclick="generateProposal()">生成详细 Proposal</button>
     <div class="coach-composer">
       <div class="coach-inputrow">
         <textarea id="coachInput" class="coach-input" rows="1" placeholder="告诉小臭你的训练目标或问题…"></textarea>
@@ -2605,7 +2562,7 @@ async function routeUserFlow(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=1020";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1030";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}}
     document.getElementById("onboardScreen").classList.add("show");
@@ -2632,7 +2589,7 @@ async function routeUserFlow(){
 
   revealApp();
   const ci=document.getElementById("coachAvatar");
-  if(ci)ci.src="./xiaochou.jpg?v=1020";
+  if(ci)ci.src="./xiaochou.jpg?v=1030";
 
   appBrandLoaded=false;
   updateDynamicPlanTitle(true).catch(console.error);
@@ -2739,7 +2696,7 @@ function appendCoachBubble(role,content,{pending=false}={}){
     row.className="msg-row assistant";
     const img=document.createElement("img");
     img.className="msg-agent-avatar";
-    img.src="./xiaochou.jpg?v=1020";
+    img.src="./xiaochou.jpg?v=1030";
     img.alt="小臭";
     const msg=document.createElement("div");
     msg.className="msg assistant"+(pending?" pending":"");
@@ -3093,7 +3050,7 @@ async function sendCoachMessage(){
     hideTyping();
     btn.disabled=false;
     btn.textContent="发送";
-    
+    try{input.focus({preventScroll:true})}catch{}
   }
 }
 
@@ -3461,15 +3418,15 @@ function changeMonth(n){viewMonth=new Date(viewMonth.getFullYear(),viewMonth.get
 function showPage(id){
   if(document.body.classList.contains("setup-mode") && id!=="coach") id="coach";
 
-  const enteringCoach=id==="coach";
+  const isCoach=id==="coach";
 
   document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
   const page=document.getElementById(id);
   if(page)page.classList.add("active");
 
-  document.body.classList.toggle("coach-screen",enteringCoach);
-  if(!enteringCoach){
-    document.body.classList.remove("keyboard-open");
+  document.body.classList.toggle("v103-coach-open",isCoach);
+  if(!isCoach){
+    document.body.classList.remove("v103-keyboard");
   }
 
   document.querySelectorAll(".nav button").forEach(
@@ -3481,16 +3438,17 @@ function showPage(id){
   if(id==="weight")renderWeights();
   if(id==="stats")renderStats();
 
-  if(enteringCoach){
+  if(isCoach){
     setCoachAvatar();
-    kxInitCoachUX();
+    v103Init();
+    v103SyncViewport();
+
     renderCachedCoachImmediately();
     loadCoachHistory().catch(console.error);
 
     requestAnimationFrame(()=>{
-      kxMeasureCoachLayout();
-      kxScrollCoachBottom("auto",true);
-      kxTrackCoachViewport(250);
+      v103SyncViewport();
+      v103ScrollBottom("auto",true);
     });
     return;
   }
@@ -3858,8 +3816,8 @@ sendCoachMessage=async function(){
 
   input.value="";
   input.style.height="46px";
-  try{localStorage.removeItem("kyleFitCoachDraftV102")}catch(e){}
-  kxMeasureCoachLayout();
+  try{localStorage.removeItem(V103_DRAFT_KEY)}catch(e){}
+  v103SyncViewport();
   v10SendCoachText(text);
 };
 
@@ -3876,7 +3834,7 @@ routeUserFlow=async function(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=1020";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1030";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){
       try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}
@@ -3935,165 +3893,127 @@ afterLogin=async function(){
 };
 
 
-/* ===== V10.2 clean mobile chat runtime ===== */
-let kxCoachStickBottom=true;
-let kxCoachViewportRAF=0;
-let kxCoachViewportUntil=0;
-let kxCoachInitialized=false;
+/* ===== V10.3 mature mobile chat runtime ===== */
+let v103StickBottom=true;
+let v103Initialized=false;
+let v103LastViewportHeight=0;
+const V103_DRAFT_KEY="kyleFitCoachDraftV103";
 
-function kxCoachPane(){
+function v103Pane(){
   return document.getElementById("coachScrollPane");
 }
 
-function kxCoachNearBottom(threshold=100){
-  const p=kxCoachPane();
-  if(!p)return true;
-  return (p.scrollHeight-p.scrollTop-p.clientHeight)<=threshold;
+function v103NearBottom(threshold=100){
+  const pane=v103Pane();
+  if(!pane)return true;
+  return pane.scrollHeight-pane.scrollTop-pane.clientHeight<=threshold;
 }
 
-function kxScrollCoachBottom(behavior="auto",force=false){
-  const p=kxCoachPane();
-  if(!p)return;
-  if(!force && !kxCoachStickBottom)return;
+function v103ScrollBottom(behavior="auto",force=false){
+  const pane=v103Pane();
+  if(!pane)return;
+  if(!force&&!v103StickBottom)return;
+
   requestAnimationFrame(()=>{
-    p.scrollTo({top:p.scrollHeight,behavior});
+    pane.scrollTo({
+      top:pane.scrollHeight,
+      behavior
+    });
   });
 }
 
-function kxMeasureCoachLayout(){
+function v103SyncViewport(){
   if(!window.matchMedia("(max-width:700px)").matches)return;
-  if(!document.body.classList.contains("coach-screen"))return;
-
-  const coach=document.getElementById("coach");
-  const head=coach?.querySelector(".coach-head");
-  const composer=coach?.querySelector(".coach-composer");
-  const nav=document.querySelector(".nav");
-  if(!coach||!head||!composer)return;
 
   const vv=window.visualViewport;
-  const vvTop=Math.max(0,Math.round(vv?.offsetTop||0));
-  const vvHeight=Math.max(260,Math.round(vv?.height||window.innerHeight));
-  const covered=Math.max(0,Math.round(window.innerHeight-(vvTop+vvHeight)));
-  const focused=document.activeElement===document.getElementById("coachInput");
-  const keyboardOpen=focused && covered>90;
+  const h=Math.max(300,Math.round(vv?.height||window.innerHeight));
+  const nav=document.querySelector(".nav");
+  const navH=Math.ceil(nav?.getBoundingClientRect().height||74);
 
-  const navH=Math.ceil(nav?.getBoundingClientRect().height||76);
-  const headH=Math.ceil(head.getBoundingClientRect().height||78);
-  const composerH=Math.ceil(composer.getBoundingClientRect().height||66);
+  document.documentElement.style.setProperty("--v103-vh",h+"px");
+  document.documentElement.style.setProperty("--v103-nav-h",navH+"px");
 
-  document.body.classList.toggle("keyboard-open",keyboardOpen);
-  document.documentElement.style.setProperty("--kx-chat-top",vvTop+"px");
-  document.documentElement.style.setProperty("--kx-chat-header-h",headH+"px");
-  document.documentElement.style.setProperty("--kx-chat-composer-h",composerH+"px");
-  document.documentElement.style.setProperty(
-    "--kx-chat-bottom",
-    (keyboardOpen?covered:navH)+"px"
-  );
+  const input=document.getElementById("coachInput");
+  const focused=document.activeElement===input;
 
-  if(kxCoachStickBottom){
-    requestAnimationFrame(()=>kxScrollCoachBottom("auto",true));
+  /* Keyboards reduce visualViewport.height.
+     We do not calculate a bottom offset at all. */
+  const keyboardOpen=focused && h < window.innerHeight-100;
+  document.body.classList.toggle("v103-keyboard",keyboardOpen);
+
+  if(v103LastViewportHeight!==h){
+    v103LastViewportHeight=h;
+    if(v103StickBottom){
+      requestAnimationFrame(()=>v103ScrollBottom("auto",true));
+    }
   }
 }
 
-function kxTrackCoachViewport(ms=700){
-  kxCoachViewportUntil=performance.now()+ms;
-  if(kxCoachViewportRAF)return;
+function v103Init(){
+  if(v103Initialized)return;
+  v103Initialized=true;
 
-  const tick=()=>{
-    kxCoachViewportRAF=0;
-    kxMeasureCoachLayout();
-    if(performance.now()<kxCoachViewportUntil){
-      kxCoachViewportRAF=requestAnimationFrame(tick);
-    }
-  };
-  kxCoachViewportRAF=requestAnimationFrame(tick);
-}
-
-function kxInitCoachUX(){
-  if(kxCoachInitialized)return;
-  kxCoachInitialized=true;
-
-  const p=kxCoachPane();
+  const pane=v103Pane();
   const input=document.getElementById("coachInput");
-  if(!p||!input)return;
+  if(!pane||!input)return;
 
-  p.addEventListener("scroll",()=>{
-    kxCoachStickBottom=kxCoachNearBottom(90);
+  pane.addEventListener("scroll",()=>{
+    v103StickBottom=v103NearBottom(90);
   },{passive:true});
 
-  p.addEventListener("touchstart",()=>{
-    kxCoachStickBottom=kxCoachNearBottom(45);
+  pane.addEventListener("touchstart",()=>{
+    v103StickBottom=v103NearBottom(50);
   },{passive:true});
-
-  input.addEventListener("input",()=>{
-    input.style.height="auto";
-    input.style.height=Math.min(input.scrollHeight,108)+"px";
-    try{localStorage.setItem("kyleFitCoachDraftV102",input.value)}catch(e){}
-    kxMeasureCoachLayout();
-  });
 
   input.addEventListener("focus",()=>{
-    kxCoachStickBottom=kxCoachNearBottom(150);
+    v103StickBottom=v103NearBottom(150);
+    v103SyncViewport();
 
-    /* Track the complete iOS keyboard animation.
-       Composer moves with the keyboard instead of waiting for page scroll. */
-    kxTrackCoachViewport(850);
-    [0,40,80,130,200,300,450,650,820].forEach(t=>{
+    /* iOS updates visualViewport during the keyboard animation.
+       A few reads are enough; no manual keyboard offset is applied. */
+    [0,50,120,220,360,520].forEach(ms=>{
       setTimeout(()=>{
-        kxMeasureCoachLayout();
-        if(kxCoachStickBottom)kxScrollCoachBottom("auto",true);
-      },t);
+        v103SyncViewport();
+        if(v103StickBottom)v103ScrollBottom("auto",true);
+      },ms);
     });
   });
 
   input.addEventListener("blur",()=>{
-    kxTrackCoachViewport(500);
-    [0,80,180,350,500].forEach(t=>setTimeout(kxMeasureCoachLayout,t));
+    [0,80,180,320].forEach(ms=>setTimeout(v103SyncViewport,ms));
   });
 
-  let draft="";
-  try{draft=localStorage.getItem("kyleFitCoachDraftV102")||""}catch(e){}
-  if(draft&&!input.value){
-    input.value=draft;
+  input.addEventListener("input",()=>{
     input.style.height="auto";
     input.style.height=Math.min(input.scrollHeight,108)+"px";
-  }
+    try{localStorage.setItem(V103_DRAFT_KEY,input.value)}catch(e){}
+    if(v103StickBottom)v103ScrollBottom("auto",true);
+  });
+
+  try{
+    const draft=localStorage.getItem(V103_DRAFT_KEY)||"";
+    if(draft&&!input.value){
+      input.value=draft;
+      input.style.height="auto";
+      input.style.height=Math.min(input.scrollHeight,108)+"px";
+    }
+  }catch(e){}
 }
-
-/* Override all earlier chat scrolling semantics. */
-coachScrollToBottom=function(behavior="smooth"){
-  kxScrollCoachBottom(behavior,false);
-};
-scrollLatestCoachIntoView=function(behavior="smooth"){
-  kxScrollCoachBottom(behavior,false);
-};
-
-/* Replace viewport updater used by older listeners too. */
-updateChatViewport=function(){
-  kxMeasureCoachLayout();
-};
 
 if(window.visualViewport){
-  visualViewport.addEventListener("resize",()=>{
-    kxMeasureCoachLayout();
-    kxTrackCoachViewport(180);
-  },{passive:true});
-
-  visualViewport.addEventListener("scroll",()=>{
-    kxMeasureCoachLayout();
-  },{passive:true});
+  visualViewport.addEventListener("resize",v103SyncViewport,{passive:true});
+  visualViewport.addEventListener("scroll",v103SyncViewport,{passive:true});
 }
+window.addEventListener("resize",v103SyncViewport,{passive:true});
 
-window.addEventListener("resize",()=>{
-  kxMeasureCoachLayout();
-  kxTrackCoachViewport(180);
-},{passive:true});
+/* Reuse the established chat code, only change scrolling behavior. */
+coachScrollToBottom=function(behavior="smooth"){
+  v103ScrollBottom(behavior,false);
+};
 
-document.addEventListener("focusin",e=>{
-  if(e.target?.id==="coachInput"){
-    kxTrackCoachViewport(850);
-  }
-});
+scrollLatestCoachIntoView=function(behavior="smooth"){
+  v103ScrollBottom(behavior,false);
+};
 
 document.getElementById("startDate").value=start;
 renderHome();renderToday(selectedDate);renderWeights();renderStats();
@@ -4104,7 +4024,7 @@ window.addEventListener("load",()=>{
   setTimeout(()=>splash && splash.classList.add("hide"),350);
 });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1020").catch(()=>{}));
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1030").catch(()=>{}));
 }
 
 </script>
