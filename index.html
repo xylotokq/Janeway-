@@ -1321,6 +1321,26 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
   }
 }
 
+
+/* V10.3.2 iOS focus/pan compensation */
+:root{
+  --v1032-vv-top:0px;
+  --v1032-vv-h:100dvh;
+}
+@media(max-width:700px){
+  body.v103-coach-open.v103-keyboard #coach.active{
+    height:var(--v1032-vv-h) !important;
+    transform:translateY(var(--v1032-vv-top)) !important;
+    transform-origin:top left !important;
+  }
+  body.v103-coach-open:not(.v103-keyboard) #coach.active{
+    transform:none !important;
+  }
+  body.v103-keyboard .nav{
+    display:none !important;
+  }
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1375,7 +1395,7 @@ window.addEventListener("DOMContentLoaded", function(){
 <div id="onboardScreen" class="onboard-screen">
   <div class="onboard-card">
     <div class="brand-row" style="margin-bottom:8px">
-      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1031" alt="小臭">
+      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1032" alt="小臭">
       <div>
         <h2 style="margin:0">先告诉我一点基本信息</h2>
         <div class="small">填完后直接进入小臭，由 AI 继续跟你聊并制定方案。</div>
@@ -2656,7 +2676,7 @@ async function routeUserFlow(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=1031";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1032";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}}
     document.getElementById("onboardScreen").classList.add("show");
@@ -2683,7 +2703,7 @@ async function routeUserFlow(){
 
   revealApp();
   const ci=document.getElementById("coachAvatar");
-  if(ci)ci.src="./xiaochou.jpg?v=1031";
+  if(ci)ci.src="./xiaochou.jpg?v=1032";
 
   appBrandLoaded=false;
   updateDynamicPlanTitle(true).catch(console.error);
@@ -2790,7 +2810,7 @@ function appendCoachBubble(role,content,{pending=false}={}){
     row.className="msg-row assistant";
     const img=document.createElement("img");
     img.className="msg-agent-avatar";
-    img.src="./xiaochou.jpg?v=1031";
+    img.src="./xiaochou.jpg?v=1032";
     img.alt="小臭";
     const msg=document.createElement("div");
     msg.className="msg assistant"+(pending?" pending":"");
@@ -3929,7 +3949,7 @@ routeUserFlow=async function(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=1031";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1032";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){
       try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}
@@ -3993,7 +4013,7 @@ let v103StickBottom=true;
 let v103Initialized=false;
 let v103BaselineHeight=0;
 let v103LastHeight=0;
-const V103_DRAFT_KEY="kyleFitCoachDraftV1031";
+const V103_DRAFT_KEY="kyleFitCoachDraftV1032";
 
 function v103Pane(){
   return document.getElementById("coachScrollPane");
@@ -4026,40 +4046,29 @@ function v103RememberBaseline(){
 function v103SyncViewport(){
   if(!window.matchMedia("(max-width:700px)").matches)return;
 
-  const h=v103CurrentVisualHeight();
+  const vv=window.visualViewport;
+  const h=Math.max(280,Math.round(vv?.height||window.innerHeight));
+  const vvTop=Math.max(0,Math.round(vv?.offsetTop||0));
   const nav=document.querySelector(".nav");
   const navH=Math.ceil(nav?.getBoundingClientRect().height||74);
   const input=document.getElementById("coachInput");
   const focused=document.activeElement===input;
 
-  /* Capture the no-keyboard height before focus / after blur.
-     iOS PWA can shrink window.innerHeight together with visualViewport,
-     so comparing those two values is unreliable. */
-  if(!focused && h>v103BaselineHeight){
-    v103BaselineHeight=h;
-  }
-  if(!v103BaselineHeight){
-    v103BaselineHeight=h;
-  }
+  if(!focused && h>v103BaselineHeight) v103BaselineHeight=h;
+  if(!v103BaselineHeight) v103BaselineHeight=h;
 
-  const shrink=v103BaselineHeight-h;
-  const keyboardOpen=focused && shrink>120;
+  /* iOS can report stale viewport metrics on the first focus frame.
+     Focus itself enters keyboard mode immediately. */
+  document.body.classList.toggle("v103-keyboard",focused);
 
-  document.body.classList.toggle("v103-keyboard",keyboardOpen);
   document.documentElement.style.setProperty("--v1031-chat-h",h+"px");
   document.documentElement.style.setProperty("--v1031-nav-h",navH+"px");
-
-  /* iOS may pan the document when focusing an input. Pull the layout
-     back to the top; the scrollable message pane retains its own position. */
-  if(keyboardOpen && window.scrollY!==0){
-    window.scrollTo(0,0);
-  }
+  document.documentElement.style.setProperty("--v1032-vv-h",h+"px");
+  document.documentElement.style.setProperty("--v1032-vv-top",focused?vvTop+"px":"0px");
 
   if(v103LastHeight!==h){
     v103LastHeight=h;
-    if(v103StickBottom){
-      requestAnimationFrame(()=>v103ScrollBottom("auto",true));
-    }
+    if(v103StickBottom) requestAnimationFrame(()=>v103ScrollBottom("auto",true));
   }
 }
 
@@ -4093,20 +4102,43 @@ function v103Init(){
   input.addEventListener("focus",()=>{
     v103StickBottom=v103NearBottom(150);
 
-    /* Baseline MUST be saved before keyboard finishes opening. */
-    if(!v103BaselineHeight)v103BaselineHeight=v103CurrentVisualHeight();
+    /* Enter keyboard mode synchronously, before Safari finishes panning. */
+    document.body.classList.add("v103-keyboard");
+    v103SyncViewport();
 
-    v103TrackViewport(900);
-    [0,40,80,140,220,340,500,700,900].forEach(ms=>{
+    const composer=document.querySelector("#coach .coach-composer");
+    v103TrackViewport(1000);
+
+    [0,30,60,100,160,240,340,480,650,850,1000].forEach(ms=>{
       setTimeout(()=>{
         v103SyncViewport();
-        if(v103StickBottom)v103ScrollBottom("auto",true);
+
+        if(composer && document.activeElement===input){
+          const vv=window.visualViewport;
+          const vvTop=vv?.offsetTop||0;
+          const visibleBottom=vvTop+(vv?.height||window.innerHeight);
+          const r=composer.getBoundingClientRect();
+
+          /* Same correction the user's manual upward swipe currently causes. */
+          if(r.bottom > visibleBottom-2 || r.top < vvTop){
+            try{
+              composer.scrollIntoView({
+                block:"end",
+                inline:"nearest",
+                behavior:"auto"
+              });
+            }catch(e){}
+          }
+        }
+
+        if(v103StickBottom) v103ScrollBottom("auto",true);
       },ms);
     });
   });
 
   input.addEventListener("blur",()=>{
     document.body.classList.remove("v103-keyboard");
+    document.documentElement.style.setProperty("--v1032-vv-top","0px");
     [0,80,180,320,520].forEach(ms=>{
       setTimeout(()=>{
         v103SyncViewport();
@@ -4167,7 +4199,7 @@ window.addEventListener("load",()=>{
   setTimeout(()=>splash && splash.classList.add("hide"),350);
 });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1031").catch(()=>{}));
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1032").catch(()=>{}));
 }
 
 </script>
