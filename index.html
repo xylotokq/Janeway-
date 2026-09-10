@@ -981,6 +981,85 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
   }
 }
 
+
+/* ==============================
+   V10.0 - speed / chat polish
+   ============================== */
+.nav button[data-page="coach"]{position:relative}
+.coach-nav-dot{
+  position:absolute;
+  top:7px;
+  left:calc(50% + 9px);
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#ff4d4f;
+  box-shadow:0 0 0 2px #0d1117;
+  display:none;
+}
+.nav button[data-page="coach"].has-notice .coach-nav-dot{display:block}
+
+.proposal-card .proposal-fold-toggle{
+  width:100%;
+  margin:10px 0 0;
+  border:1px solid #2b3744;
+  border-radius:12px;
+  background:#111820;
+  color:#dbe9f6;
+  min-height:42px;
+  font-weight:700;
+}
+.proposal-card .proposal-fold-body{display:none}
+.proposal-card.expanded .proposal-fold-body{display:block}
+.proposal-card.expanded .proposal-fold-toggle .fold-open{display:none}
+.proposal-card:not(.expanded) .proposal-fold-toggle .fold-close{display:none}
+
+.msg.user.failed{
+  border-color:rgba(255,95,95,.7)!important;
+  background:rgba(125,35,35,.28)!important;
+}
+.msg-status{
+  display:block;
+  margin-top:5px;
+  font-size:11px;
+  opacity:.7;
+}
+.msg-retry{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-top:5px;
+  border:0;
+  padding:3px 0;
+  background:transparent;
+  color:#ff9898;
+  font-size:12px;
+  font-weight:700;
+}
+.msg.streaming::after{
+  content:"";
+  display:inline-block;
+  width:2px;
+  height:1em;
+  margin-left:3px;
+  vertical-align:-2px;
+  background:currentColor;
+  animation:coachCaret .8s steps(1) infinite;
+}
+@keyframes coachCaret{50%{opacity:0}}
+
+.startup-cache-badge{
+  display:none;
+  font-size:10px;
+  opacity:.45;
+  margin-left:5px;
+}
+body.cache-hydrated .startup-cache-badge{display:inline}
+
+@media(max-width:700px){
+  .proposal-card:not(.expanded) .proposal-fold-body{display:none!important}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1035,7 +1114,7 @@ window.addEventListener("DOMContentLoaded", function(){
 <div id="onboardScreen" class="onboard-screen">
   <div class="onboard-card">
     <div class="brand-row" style="margin-bottom:8px">
-      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=993" alt="小臭">
+      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1000" alt="小臭">
       <div>
         <h2 style="margin:0">先告诉我一点基本信息</h2>
         <div class="small">填完后直接进入小臭，由 AI 继续跟你聊并制定方案。</div>
@@ -1319,7 +1398,7 @@ window.addEventListener("DOMContentLoaded", function(){
   <button data-page="today" onclick="showPage('today')"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M5 12.5l4 4L19 6.5"/></svg></span><span>训练</span></button>
   <button data-page="stats" onclick="showPage('stats')"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7"/></svg></span><span>统计</span></button>
   <button data-page="weight" onclick="showPage('weight')"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M5 7h14l2 12H3L5 7Zm3 0a4 4 0 0 1 8 0M12 9l2-2"/></svg></span><span>体重</span></button>
-  <button data-page="coach" onclick="showPage('coach')"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M5 5.5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3v-3H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Zm3 5h.01M12 10.5h.01M16 10.5h.01"/></svg></span><span>小臭</span></button>
+  <button data-page="coach" onclick="showPage('coach')"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M5 5.5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3v-3H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Zm3 5h.01M12 10.5h.01M16 10.5h.01"/></svg></span><span>小臭</span><i class="coach-nav-dot" aria-hidden="true"></i></button>
   <button data-page="settings" onclick="showPage('settings')"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm8-3.5 2-1-2-3-2.2.3a8 8 0 0 0-1.6-1L16 5l-4-1-1 2a8 8 0 0 0-2 .5L7 5 4 7l.8 2a8 8 0 0 0-.8 2L2 12l2 3 2.2-.3a8 8 0 0 0 1.6 1L8 18l4 1 1-2a8 8 0 0 0 2-.5L17 18l3-2-.8-2a8 8 0 0 0 .8-2Z"/></svg></span><span>设置</span></button>
 </nav>
 
@@ -1749,12 +1828,16 @@ async function afterLogin(){
   document.getElementById("accountEmail").textContent=currentUser?.email||"";
   setCloudStatus("同步中","sync");
 
-  await Promise.all([
+  // Paint the last known screen immediately. Network refresh happens after.
+  hydrateStartupCache();
+
+  Promise.all([
     ensureProfile().catch(console.error),
     routeUserFlow()
-  ]);
+  ]).catch(console.error);
 
-  syncFromCloud().catch(console.error);
+  // Heavy training-history sync never blocks first paint.
+  setTimeout(()=>syncFromCloud().catch(console.error),0);
 }
 async function initAuth(){
   const img=document.querySelector(".auth-avatar");
@@ -1921,7 +2004,106 @@ let weights = store.get("weights",[]);
 let logs = store.get("exerciseLogs",{});
 let activePlanJSON = null;
 let activePlanMeta = null;
+
 let currentProposal = null;
+
+const STARTUP_CACHE_KEY="kyleFitStartupCacheV10";
+
+function saveStartupCache(goals,activePlan,activeBlock){
+  if(!currentUser)return;
+  try{
+    store.set(STARTUP_CACHE_KEY,{
+      user_id:currentUser.id,
+      saved_at:Date.now(),
+      goals:goals||null,
+      activePlan:activePlan||null,
+      activeBlock:activeBlock||null
+    });
+  }catch(e){}
+}
+
+function hydrateStartupCache(){
+  if(!currentUser)return false;
+  const c=store.get(STARTUP_CACHE_KEY,null);
+  if(!c||c.user_id!==currentUser.id)return false;
+
+  const p=c.activePlan||null;
+  const b=c.activeBlock||null;
+  if(!p&&!b)return false;
+
+  activePlanMeta=p||null;
+  activePlanJSON=b?.plan_json||p?.plan_json||null;
+
+  if(b?.start_date){
+    start=b.start_date;
+    store.set("startDate",start);
+    const sd=document.getElementById("startDate");
+    if(sd)sd.value=start;
+  }
+
+  if(activePlanMeta&&b){
+    activePlanMeta.block_id=b.id;
+    activePlanMeta.block_number=b.block_number;
+    activePlanMeta.block_start=b.start_date;
+    activePlanMeta.block_end=b.end_date;
+  }
+
+  const g=c.goals||{};
+  const cachedName=
+    g.nickname ||
+    currentUser?.user_metadata?.display_name ||
+    currentUser?.user_metadata?.nickname ||
+    currentUser?.email?.split("@")[0] ||
+    "我的";
+  const weeks=Number(g.goal_duration_weeks)||Number(activePlanJSON?.overall_goal_duration_weeks)||null;
+  const title=document.getElementById("appPlanTitle");
+  if(title){
+    title.textContent=weeks?`${cachedName} ${weeks}周的养成计划`:`${cachedName}的养成计划`;
+  }
+
+  revealApp();
+  setSetupMode(false);
+  document.body.classList.add("cache-hydrated");
+  showPage("home");
+  return true;
+}
+
+function setCoachNavNotice(on){
+  const btn=document.querySelector('.nav button[data-page="coach"]');
+  if(btn)btn.classList.toggle("has-notice",!!on);
+}
+
+async function refreshCoachNavNotice(){
+  if(!currentUser||!sb)return;
+  try{
+    const [proposalRes,blockRes,reviewRes]=await Promise.all([
+      sb.from("plan_proposals")
+        .select("id")
+        .eq("user_id",currentUser.id)
+        .eq("status","pending")
+        .limit(1),
+      sb.from("plan_blocks")
+        .select("id,status")
+        .eq("user_id",currentUser.id)
+        .in("status",["pending","confirmed"])
+        .limit(1),
+      sb.from("weekly_reviews")
+        .select("id,generate_next_block")
+        .eq("user_id",currentUser.id)
+        .eq("generate_next_block",true)
+        .order("created_at",{ascending:false})
+        .limit(1)
+    ]);
+    setCoachNavNotice(
+      !!proposalRes.data?.length ||
+      !!blockRes.data?.length ||
+      !!reviewRes.data?.length
+    );
+  }catch(e){
+    console.error("coach nav notice",e);
+  }
+}
+
 
 function iso(d){let x=new Date(d); x.setMinutes(x.getMinutes()-x.getTimezoneOffset()); return x.toISOString().slice(0,10)}
 function parseLocal(s){const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
@@ -2310,10 +2492,12 @@ async function routeUserFlow(){
     fetchActiveBlock()
   ]);
 
+  saveStartupCache(goals,activePlan,activeBlock);
+
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=993";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1000";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}}
     document.getElementById("onboardScreen").classList.add("show");
@@ -2339,13 +2523,16 @@ async function routeUserFlow(){
   }
 
   revealApp();
+  document.body.classList.remove("cache-hydrated");
+
   const ci=document.getElementById("coachAvatar");
-  if(ci)ci.src="./xiaochou.jpg?v=993";
+  if(ci)ci.src="./xiaochou.jpg?v=1000";
 
   appBrandLoaded=false;
   updateDynamicPlanTitle(true).catch(console.error);
+  refreshCoachNavNotice().catch(console.error);
 
-  if(!activePlan){
+  if(!activePlan && !activeBlock){
     setSetupMode(true);
     document.getElementById("onboardScreen").classList.remove("show");
     document.body.style.overflow="";
@@ -2437,7 +2624,86 @@ function coachScrollToBottom(behavior="smooth"){
     if(hasOwnScroll) box.scrollTo({top:box.scrollHeight,behavior});
   });
 }
-function appendCoachBubble(role,content,{pending=false}={}){
+function appendCoachBubble(role,content,{pending=false,clientId=null}={}){
+  const box=document.getElementById("coachThread");
+  if(!box)return null;
+  const welcome=document.getElementById("coachWelcome");
+  if(welcome)welcome.style.display="none";
+
+  if(role==="assistant"){
+    const row=document.createElement("div");
+    row.className="msg-row assistant";
+    const img=document.createElement("img");
+    img.className="msg-agent-avatar";
+    img.src="./xiaochou.jpg?v=1000";
+    img.alt="小臭";
+    const msg=document.createElement("div");
+    msg.className="msg assistant"+(pending?" pending":"");
+    msg.textContent=content;
+    row.appendChild(img);
+    row.appendChild(msg);
+    box.appendChild(row);
+    scrollLatestCoachIntoView();
+    return msg;
+  }
+
+  const msg=document.createElement("div");
+  msg.className=`msg ${role||"user"}${pending?" pending":""}`;
+  if(clientId)msg.dataset.clientId=clientId;
+
+  const body=document.createElement("span");
+  body.className="msg-body";
+  body.textContent=content;
+  msg.appendChild(body);
+
+  if(pending){
+    const status=document.createElement("span");
+    status.className="msg-status";
+    status.textContent="发送中…";
+    msg.appendChild(status);
+  }
+
+  box.appendChild(msg);
+  scrollLatestCoachIntoView();
+  return msg;
+}
+
+function markCoachMessageSent(msg){
+  if(!msg)return;
+  msg.classList.remove("pending","failed");
+  msg.querySelector(".msg-status")?.remove();
+  msg.querySelector(".msg-retry")?.remove();
+}
+
+function markCoachMessageFailed(msg,text){
+  if(!msg)return;
+  msg.classList.remove("pending");
+  msg.classList.add("failed");
+  let status=msg.querySelector(".msg-status");
+  if(!status){
+    status=document.createElement("span");
+    status.className="msg-status";
+    msg.appendChild(status);
+  }
+  status.textContent="发送失败";
+
+  let retry=msg.querySelector(".msg-retry");
+  if(!retry){
+    retry=document.createElement("button");
+    retry.type="button";
+    retry.className="msg-retry";
+    retry.textContent="↻ 重新发送";
+    msg.appendChild(retry);
+  }
+  retry.onclick=()=>{
+    retry.disabled=true;
+    retry.textContent="重新发送中…";
+    msg.classList.remove("failed");
+    msg.classList.add("pending");
+    status.textContent="发送中…";
+    sendCoachText(text,msg,true);
+  };
+}={}){
   const box=document.getElementById("coachThread");
   if(!box)return null;
   const welcome=document.getElementById("coachWelcome");
@@ -2447,7 +2713,7 @@ function appendCoachBubble(role,content,{pending=false}={}){
     row.className="msg-row assistant";
     const img=document.createElement("img");
     img.className="msg-agent-avatar";
-    img.src="./xiaochou.jpg?v=993";
+    img.src="./xiaochou.jpg?v=1000";
     img.alt="小臭";
     const msg=document.createElement("div");
     msg.className="msg assistant"+(pending?" pending":"");
@@ -2554,6 +2820,8 @@ function renderProposalCard(id,p){
   if(btn)btn.style.display="none";
   if(!area)return;
 
+  setCoachNavNotice(true);
+
   const days=(p.weekly_structure||[]).map(d=>{
     const exercises=(d.main_exercises||[]).map(ex=>`
       <div class="proposal-ex"><span>${proposalEsc(ex.name)}</span><span>${proposalEsc(ex.sets)}组 · ${proposalEsc(ex.rep_range)}</span></div>`).join("");
@@ -2570,7 +2838,9 @@ function renderProposalCard(id,p){
   const confirmPts=(p.points_to_confirm||[]).map(x=>`<li>${proposalEsc(x)}</li>`).join("");
   const notes=(p.nutrition?.notes||[]).map(x=>`<li>${proposalEsc(x)}</li>`).join("");
 
-  area.innerHTML=`<div class="proposal-card">
+  const defaultExpanded=!window.matchMedia("(max-width:700px)").matches;
+
+  area.innerHTML=`<div class="proposal-card ${defaultExpanded?"expanded":""}">
     <div class="proposal-top">
       <div>
         <div class="proposal-title">${proposalEsc(p.goal_summary||"训练计划 Proposal")}</div>
@@ -2579,36 +2849,52 @@ function renderProposalCard(id,p){
       <span class="badge">待确认</span>
     </div>
 
-    <div class="proposal-section"><h4>训练结构</h4>${days}</div>
+    <button class="proposal-fold-toggle" type="button" onclick="toggleProposalFold(this)">
+      <span class="fold-open">展开详细 Proposal ↓</span>
+      <span class="fold-close">收起详细 Proposal ↑</span>
+    </button>
 
-    <div class="proposal-section">
-      <h4>饮食方向</h4>
-      <div class="small">${proposalEsc(p.nutrition?.strategy||"")}</div>
-      <div class="small" style="margin-top:5px">蛋白目标：<strong>${proposalEsc(p.nutrition?.protein_g_per_day||"--")} g / 天</strong></div>
-      <div class="small" style="margin-top:5px">${proposalEsc(p.nutrition?.meal_structure||"")}</div>
-      ${notes?`<ul class="proposal-list" style="margin-top:7px">${notes}</ul>`:""}
-    </div>
+    <div class="proposal-fold-body">
+      <div class="proposal-section"><h4>训练结构</h4>${days}</div>
 
-    <div class="proposal-section">
-      <h4>进阶方式</h4>
-      <div class="small"><strong>${proposalEsc(p.progression?.method||"")}</strong> · ${proposalEsc(p.progression?.summary||"")}</div>
-    </div>
+      <div class="proposal-section">
+        <h4>饮食方向</h4>
+        <div class="small">${proposalEsc(p.nutrition?.strategy||"")}</div>
+        <div class="small" style="margin-top:5px">蛋白目标：<strong>${proposalEsc(p.nutrition?.protein_g_per_day||"--")} g / 天</strong></div>
+        <div class="small" style="margin-top:5px">${proposalEsc(p.nutrition?.meal_structure||"")}</div>
+        ${notes?`<ul class="proposal-list" style="margin-top:7px">${notes}</ul>`:""}
+      </div>
 
-    ${limits?`<div class="proposal-section"><h4>限制与调整</h4><ul class="proposal-list">${limits}</ul></div>`:""}
-    ${rationales?`<div class="proposal-section"><h4>为什么这样安排</h4><ul class="proposal-list">${rationales}</ul></div>`:""}
+      <div class="proposal-section">
+        <h4>进阶方式</h4>
+        <div class="small"><strong>${proposalEsc(p.progression?.method||"")}</strong> · ${proposalEsc(p.progression?.summary||"")}</div>
+      </div>
 
-    <div class="proposal-section">
-      <h4>预期进度</h4>
-      <div class="small">${proposalEsc(p.expected_progress||"")}</div>
-    </div>
+      ${limits?`<div class="proposal-section"><h4>限制与调整</h4><ul class="proposal-list">${limits}</ul></div>`:""}
+      ${rationales?`<div class="proposal-section"><h4>为什么这样安排</h4><ul class="proposal-list">${rationales}</ul></div>`:""}
 
-    ${confirmPts?`<div class="proposal-section"><h4>确认前请检查</h4><ul class="proposal-list">${confirmPts}</ul></div>`:""}
+      <div class="proposal-section">
+        <h4>预期进度</h4>
+        <div class="small">${proposalEsc(p.expected_progress||"")}</div>
+      </div>
 
-    <div class="proposal-actions">
-      <button class="btn ghost" onclick="continueAdjusting()">继续调整</button>
-      <button id="confirmPlanBtn" class="btn primary" onclick="confirmProposalPlan()">Confirm Plan</button>
+      ${confirmPts?`<div class="proposal-section"><h4>确认前请检查</h4><ul class="proposal-list">${confirmPts}</ul></div>`:""}
+
+      <div class="proposal-actions">
+        <button class="btn ghost" onclick="continueAdjusting()">继续调整</button>
+        <button id="confirmPlanBtn" class="btn primary" onclick="confirmProposalPlan()">Confirm Plan</button>
+      </div>
     </div>
   </div>`;
+}
+
+function toggleProposalFold(btn){
+  const card=btn?.closest(".proposal-card");
+  if(!card)return;
+  card.classList.toggle("expanded");
+  if(card.classList.contains("expanded")){
+    setTimeout(()=>btn.scrollIntoView({behavior:"smooth",block:"nearest"}),30);
+  }
 }
 
 async function loadPendingProposal(){
@@ -2621,6 +2907,7 @@ async function loadPendingProposal(){
     .limit(1);
   if(error){console.error(error);return}
   if(data?.length){
+    setCoachNavNotice(true);
     renderProposalCard(data[0].id,data[0].proposal_json);
   }else{
     currentProposal=null;
@@ -2752,17 +3039,97 @@ function appendCoachError(t){const b=document.getElementById("coachThread"),d=do
 function showTyping(){const b=document.getElementById("coachThread");if(!b)return;document.getElementById("coachTyping")?.remove();const d=document.createElement("div");d.id="coachTyping";d.className="typing";d.innerHTML="<i></i><i></i><i></i>";b.appendChild(d);scrollLatestCoachIntoView()}
 function hideTyping(){document.getElementById("coachTyping")?.remove()}
 
-async function sendCoachMessage(){
-  if(!currentUser||!sb)return showAuth();
-  const input=document.getElementById("coachInput");
-  const btn=document.getElementById("coachSendBtn");
-  const text=input.value.trim();
-  if(!text)return;
 
-  input.value="";
-  input.style.height="";
-  appendCoachBubble("user",text);
-  appendCoachCache("user",text);
+async function animateCoachReply(text,msg){
+  if(!msg)return;
+  msg.classList.add("streaming");
+  msg.textContent="";
+  const total=text.length;
+  const step=Math.max(2,Math.ceil(total/120));
+  for(let i=0;i<total;i+=step){
+    msg.textContent+=text.slice(i,i+step);
+    if(i%24===0)scrollLatestCoachIntoView("auto");
+    await new Promise(r=>setTimeout(r,6));
+  }
+  msg.classList.remove("streaming");
+  scrollLatestCoachIntoView();
+}
+
+function parseSSEText(buffer,onDelta){
+  const blocks=buffer.split("\n\n");
+  const rest=blocks.pop()||"";
+  for(const block of blocks){
+    for(const line of block.split("\n")){
+      if(!line.startsWith("data:"))continue;
+      const raw=line.slice(5).trim();
+      if(!raw||raw==="[DONE]")continue;
+      try{
+        const obj=JSON.parse(raw);
+        const delta=
+          obj?.choices?.[0]?.delta?.content ??
+          obj?.delta ??
+          obj?.content ??
+          "";
+        if(delta)onDelta(delta);
+      }catch{
+        onDelta(raw);
+      }
+    }
+  }
+  return rest;
+}
+
+async function readCoachStream(resp,msg){
+  const reader=resp.body?.getReader();
+  if(!reader)throw new Error("浏览器不支持流式读取");
+  const dec=new TextDecoder();
+  const ct=(resp.headers.get("content-type")||"").toLowerCase();
+  let full="";
+  let sseBuffer="";
+  msg.classList.add("streaming");
+  msg.textContent="";
+
+  while(true){
+    const {done,value}=await reader.read();
+    if(done)break;
+    const chunk=dec.decode(value,{stream:true});
+    if(!chunk)continue;
+
+    if(ct.includes("text/event-stream")){
+      sseBuffer+=chunk;
+      sseBuffer=parseSSEText(sseBuffer,delta=>{
+        full+=delta;
+        msg.textContent+=delta;
+      });
+    }else{
+      full+=chunk;
+      msg.textContent+=chunk;
+    }
+    scrollLatestCoachIntoView("auto");
+  }
+
+  if(ct.includes("text/event-stream")&&sseBuffer.trim()){
+    parseSSEText(sseBuffer+"\n\n",delta=>{
+      full+=delta;
+      msg.textContent+=delta;
+    });
+  }
+
+  msg.classList.remove("streaming");
+  return full.trim();
+}
+
+async function sendCoachText(text,userBubble=null,isRetry=false){
+  if(!currentUser||!sb)return showAuth();
+
+  const btn=document.getElementById("coachSendBtn");
+  if(!userBubble){
+    const clientId="m_"+Date.now()+"_"+Math.random().toString(36).slice(2,7);
+    userBubble=appendCoachBubble("user",text,{pending:true,clientId});
+    appendCoachCache("user",text);
+  }else{
+    userBubble.classList.add("pending");
+  }
 
   btn.disabled=true;
   btn.textContent="…";
@@ -2773,36 +3140,97 @@ async function sendCoachMessage(){
     const token=session?.access_token;
     if(!token)throw new Error("登录状态失效，请重新登录");
 
-    const resp=await fetch(SUPABASE_URL+"/functions/v1/dynamic-handler",{
+    const resp=await fetch(SUPABASE_URL+"/functions/v1/chat-stream",{
       method:"POST",
       headers:{
         "Content-Type":"application/json",
         "Authorization":"Bearer "+token,
         "apikey":SUPABASE_PUBLISHABLE_KEY
       },
-      body:JSON.stringify({action:"chat",message:text})
+      body:JSON.stringify({message:text})
     });
 
-    const body=await resp.json().catch(()=>({}));
-    if(!resp.ok)throw new Error(body.detail||body.error||("HTTP "+resp.status));
-
-    hideTyping();
-    if(body.reply){
-      appendCoachBubble("assistant",body.reply);
-      appendCoachCache("assistant",body.reply);
+    if(!resp.ok){
+      const errText=await resp.text().catch(()=>"");
+      throw new Error(errText||`HTTP ${resp.status}`);
     }
 
-    setTimeout(()=>loadCoachHistory().catch(console.error),400);
-  }catch(e){
     hideTyping();
-    appendCoachError("小臭暂时无法回复："+(e.message||e));
-    coachScrollToBottom();
+    markCoachMessageSent(userBubble);
+
+    const assistantMsg=appendCoachBubble("assistant","",{pending:false});
+    const contentType=(resp.headers.get("content-type")||"").toLowerCase();
+
+    let reply="";
+    if(resp.body && !contentType.includes("application/json")){
+      reply=await readCoachStream(resp,assistantMsg);
+    }else{
+      const body=await resp.json().catch(()=>({}));
+      reply=body.reply||body.content||"";
+      await animateCoachReply(reply,assistantMsg);
+    }
+
+    if(reply){
+      assistantMsg.textContent=reply;
+      appendCoachCache("assistant",reply);
+    }
+
+    refreshCoachNavNotice().catch(console.error);
+  }catch(streamErr){
+    // Backward-compatible fallback: if chat-stream has not been deployed yet,
+    // use the existing dynamic-handler once. 404/405 only, so we do not
+    // introduce slow repeated retries for normal model errors.
+    const msg=String(streamErr?.message||streamErr);
+    const missingStream=/HTTP 404|HTTP 405|not found/i.test(msg);
+
+    if(missingStream){
+      try{
+        const {data:{session}}=await sb.auth.getSession();
+        const token=session?.access_token;
+        const fallback=await fetch(SUPABASE_URL+"/functions/v1/dynamic-handler",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer "+token,
+            "apikey":SUPABASE_PUBLISHABLE_KEY
+          },
+          body:JSON.stringify({action:"chat",message:text})
+        });
+        const body=await fallback.json().catch(()=>({}));
+        if(!fallback.ok)throw new Error(body.detail||body.error||`HTTP ${fallback.status}`);
+
+        hideTyping();
+        markCoachMessageSent(userBubble);
+        const assistantMsg=appendCoachBubble("assistant","",{pending:false});
+        await animateCoachReply(body.reply||"",assistantMsg);
+        if(body.reply)appendCoachCache("assistant",body.reply);
+        return;
+      }catch(fallbackErr){
+        streamErr=fallbackErr;
+      }
+    }
+
+    hideTyping();
+    markCoachMessageFailed(userBubble,text);
+    appendCoachError("小臭暂时没发出来，你可以点这条消息下面的“重新发送”。");
+    scrollLatestCoachIntoView();
   }finally{
     hideTyping();
     btn.disabled=false;
     btn.textContent="发送";
-    try{input.focus({preventScroll:true})}catch{}
   }
+}
+
+async function sendCoachMessage(){
+  if(!currentUser||!sb)return showAuth();
+  const input=document.getElementById("coachInput");
+  const text=input.value.trim();
+  if(!text)return;
+
+  input.value="";
+  input.style.height="";
+  syncCoachComposerHeight();
+  sendCoachText(text);
 }
 
 
@@ -2851,6 +3279,14 @@ async function updateDynamicPlanTitle(force=false){
     document.title=weeks
       ? `${name} · ${weeks}周养成计划`
       : `${name} · 养成计划`;
+
+    try{
+      const c=store.get(STARTUP_CACHE_KEY,null);
+      if(c&&c.user_id===currentUser.id){
+        c.goals={...(c.goals||{}),nickname:name,goal_duration_weeks:weeks};
+        store.set(STARTUP_CACHE_KEY,c);
+      }
+    }catch(e){}
 
     appBrandLoaded=true;
   }catch(err){
@@ -3249,7 +3685,7 @@ window.addEventListener("load",()=>{
   setTimeout(()=>splash && splash.classList.add("hide"),1550);
 });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=993").catch(()=>{}));
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1000").catch(()=>{}));
 }
 
 </script>
