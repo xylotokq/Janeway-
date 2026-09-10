@@ -706,282 +706,6 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
 }
 
 
-/* V9.9 chat UX + startup performance */
-:root{--chat-vvh:100dvh}
-#coach.active{overflow:hidden!important}
-#coach .coach-page{
-  height:calc(var(--chat-vvh) - 150px)!important;
-  min-height:0!important;
-  max-height:calc(var(--chat-vvh) - 150px)!important;
-  display:flex!important;
-  flex-direction:column!important;
-  overflow:hidden!important;
-}
-#coach .coach-head,#coach #setupNote,#coach #coachWelcome,#coach .quick-prompts,#coach #proposalArea,#coach #proposalBtn{flex:0 0 auto}
-#coach .coach-thread{
-  flex:1 1 auto!important;
-  min-height:120px!important;
-  overflow-y:auto!important;
-  overscroll-behavior:contain;
-  -webkit-overflow-scrolling:touch;
-  padding:8px 2px 12px!important;
-  scroll-behavior:smooth;
-}
-#coach .coach-composer{
-  position:relative!important;
-  bottom:auto!important;
-  flex:0 0 auto;
-  background:#0d1117!important;
-  padding:9px 0 calc(4px + env(safe-area-inset-bottom))!important;
-  z-index:20;
-}
-#coach .coach-input{
-  font-size:16px!important;
-  max-height:110px;
-  overflow-y:auto;
-}
-.msg.pending{opacity:.78}
-@media(max-width:420px){
-  #coach .coach-page{
-    height:calc(var(--chat-vvh) - 136px)!important;
-    max-height:calc(var(--chat-vvh) - 136px)!important;
-  }
-  .nav button{font-size:8.5px!important}
-}
-
-
-/* V9.9.1 chat scroll hotfix
-   Do NOT lock the whole coach page. The page can scroll normally;
-   only the message thread gets its own bounded scroll area. */
-#coach.active{
-  overflow:visible !important;
-}
-
-#coach .coach-page{
-  height:auto !important;
-  max-height:none !important;
-  min-height:calc(100dvh - 150px) !important;
-  display:block !important;
-  overflow:visible !important;
-  padding-bottom:calc(92px + env(safe-area-inset-bottom)) !important;
-}
-
-#coach .coach-thread{
-  display:flex !important;
-  flex-direction:column !important;
-  gap:9px !important;
-  height:auto !important;
-  min-height:180px !important;
-  max-height:min(46dvh,520px) !important;
-  overflow-y:auto !important;
-  overflow-x:hidden !important;
-  overscroll-behavior-y:contain !important;
-  -webkit-overflow-scrolling:touch !important;
-  touch-action:pan-y !important;
-  padding:8px 2px 14px !important;
-}
-
-#coach #proposalArea{
-  max-height:none !important;
-  overflow:visible !important;
-}
-
-#coach .coach-composer{
-  position:sticky !important;
-  bottom:calc(72px + env(safe-area-inset-bottom)) !important;
-  width:100% !important;
-  background:linear-gradient(180deg,rgba(13,17,23,0),rgba(13,17,23,.98) 20%) !important;
-  padding:18px 0 8px !important;
-  z-index:25 !important;
-}
-
-/* Ensure proposal cards themselves never become a hidden clipped viewport. */
-#coach .proposal-wrap,
-#coach .proposal-card{
-  overflow:visible !important;
-  max-height:none !important;
-}
-
-@media(max-width:420px){
-  #coach .coach-page{
-    height:auto !important;
-    max-height:none !important;
-    min-height:calc(100dvh - 138px) !important;
-  }
-  #coach .coach-thread{
-    min-height:170px !important;
-    max-height:42dvh !important;
-  }
-}
-
-
-/* V9.9.2 mobile = one scroll container only */
-@media(max-width:700px){
-
-  #coach,
-  #coach.active{
-    overflow:visible !important;
-  }
-
-  #coach .coach-page{
-    display:block !important;
-    height:auto !important;
-    min-height:0 !important;
-    max-height:none !important;
-    overflow:visible !important;
-    padding-bottom:calc(110px + env(safe-area-inset-bottom)) !important;
-  }
-
-  /* On mobile the conversation is part of the page flow.
-     No second scroll box, no reserved empty viewport. */
-  #coach .coach-thread{
-    display:flex !important;
-    flex-direction:column !important;
-    gap:9px !important;
-    height:auto !important;
-    min-height:0 !important;
-    max-height:none !important;
-    overflow:visible !important;
-    overscroll-behavior:auto !important;
-    touch-action:auto !important;
-    padding:8px 2px 10px !important;
-  }
-
-  #coach #proposalArea,
-  #coach .proposal-wrap{
-    display:block !important;
-    height:auto !important;
-    min-height:0 !important;
-    max-height:none !important;
-    overflow:visible !important;
-    margin:10px 0 14px !important;
-  }
-
-  #coach #proposalBtn{
-    display:block;
-    position:relative !important;
-    margin:14px 0 12px !important;
-  }
-
-  /* Normal document flow is more reliable with iOS keyboard than sticky
-     inside a PWA page that also has a fixed bottom nav. */
-  #coach .coach-composer{
-    position:relative !important;
-    top:auto !important;
-    right:auto !important;
-    bottom:auto !important;
-    left:auto !important;
-    width:100% !important;
-    margin:0 0 12px !important;
-    padding:4px 0 !important;
-    background:#0d1117 !important;
-    z-index:2 !important;
-  }
-
-  #coach .coach-inputrow{
-    width:100% !important;
-    box-sizing:border-box !important;
-  }
-
-  #coach .coach-input{
-    min-height:44px !important;
-    max-height:100px !important;
-    font-size:16px !important;
-  }
-}
-
-
-/* V9.9.3 - mobile chat composer behaves like a native messenger */
-:root{
-  --mobile-nav-h:72px;
-  --coach-composer-h:68px;
-  --keyboard-offset:0px;
-}
-
-@media(max-width:700px){
-  /* One page scroll only */
-  #coach,
-  #coach.active,
-  #coach .coach-page,
-  #coach .coach-thread,
-  #coach #proposalArea,
-  #coach .proposal-wrap,
-  #coach .proposal-card{
-    overflow:visible !important;
-    max-height:none !important;
-  }
-
-  #coach .coach-page{
-    display:block !important;
-    height:auto !important;
-    min-height:calc(100dvh - 120px) !important;
-    padding-bottom:calc(var(--coach-composer-h) + var(--mobile-nav-h) + env(safe-area-inset-bottom) + 32px) !important;
-  }
-
-  #coach .coach-thread{
-    display:flex !important;
-    flex-direction:column !important;
-    gap:9px !important;
-    height:auto !important;
-    min-height:0 !important;
-    touch-action:auto !important;
-  }
-
-  /* Fixed composer: above nav when keyboard closed */
-  #coach .coach-composer{
-    position:fixed !important;
-    left:50% !important;
-    right:auto !important;
-    top:auto !important;
-    bottom:calc(var(--mobile-nav-h) + env(safe-area-inset-bottom)) !important;
-    transform:translateX(-50%) !important;
-    width:min(100%,620px) !important;
-    box-sizing:border-box !important;
-    margin:0 !important;
-    padding:8px 14px !important;
-    background:rgba(13,17,23,.98) !important;
-    border-top:1px solid rgba(255,255,255,.06);
-    z-index:120 !important;
-    backdrop-filter:blur(14px);
-    -webkit-backdrop-filter:blur(14px);
-  }
-
-  #coach .coach-inputrow{
-    width:100% !important;
-    box-sizing:border-box !important;
-    margin:0 !important;
-  }
-
-  #coach .coach-input{
-    min-height:46px !important;
-    max-height:104px !important;
-    font-size:16px !important;
-    line-height:1.35 !important;
-  }
-
-  /* Keyboard open: hide app nav and pin composer to keyboard top */
-  body.keyboard-open .nav{
-    display:none !important;
-  }
-
-  body.keyboard-open #coach .coach-composer{
-    bottom:var(--keyboard-offset) !important;
-    padding-bottom:8px !important;
-  }
-
-  body.keyboard-open #coach .coach-page{
-    padding-bottom:calc(var(--coach-composer-h) + 24px) !important;
-  }
-
-  /* prevent latest bubble from sitting behind fixed composer */
-  #coach .msg,
-  #coach .msg-row,
-  #coach #proposalArea{
-    scroll-margin-bottom:calc(var(--coach-composer-h) + 24px);
-  }
-}
-
-
 /* V10.0.1 stable performance/chat layer */
 .nav button[data-page="coach"]{position:relative}
 .nav button[data-page="coach"].has-notice::after{
@@ -1040,45 +764,49 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
 @keyframes coachCaret{50%{opacity:0}}
 
 
-/* =========================================================
-   V10.3 mature mobile chat architecture
-   Header / ONE scroll pane / composer
-   Composer is a normal flex child, never fixed or absolute.
-   ========================================================= */
+/* ==========================================================
+   V11 CHAT REWRITE
+   Mobile architecture:
+   coach-page = column
+   coach-head = normal flex child
+   v11CoachScroller = the ONLY scroller
+   coach-composer = normal flex child
+   No fixed/sticky composer. No keyboard bottom calculations.
+   ========================================================== */
 :root{
-  --v103-vh:100dvh;
-  --v103-nav-h:74px;
+  --v11-app-height:100dvh;
+  --v11-nav-height:76px;
 }
 
 @media(max-width:700px){
-
-  body.v103-coach-open{
+  body.v11-chat-open{
     overflow:hidden !important;
   }
 
-  body.v103-coach-open #coach.active{
+  body.v11-chat-open #coach.active{
     display:block !important;
-    position:fixed !important;
-    left:0 !important;
-    right:0 !important;
-    top:0 !important;
+    position:relative !important;
+    inset:auto !important;
     width:100% !important;
-    height:calc(var(--v103-vh) - var(--v103-nav-h)) !important;
     max-width:none !important;
+    height:calc(var(--v11-app-height) - var(--v11-nav-height)) !important;
+    min-height:0 !important;
     margin:0 !important;
     padding:0 !important;
     overflow:hidden !important;
+    transform:none !important;
     background:#0d1117 !important;
-    z-index:250 !important;
   }
 
-  body.v103-coach-open.v103-keyboard #coach.active{
-    height:var(--v103-vh) !important;
+  body.v11-chat-open.v11-keyboard #coach.active{
+    height:var(--v11-app-height) !important;
   }
 
-  body.v103-coach-open #coach .coach-page{
+  body.v11-chat-open #coach .coach-page{
     display:flex !important;
     flex-direction:column !important;
+    position:relative !important;
+    inset:auto !important;
     width:min(100%,620px) !important;
     height:100% !important;
     min-height:0 !important;
@@ -1086,257 +814,171 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
     margin:0 auto !important;
     padding:0 !important;
     overflow:hidden !important;
+    transform:none !important;
     box-sizing:border-box !important;
     background:#0d1117 !important;
   }
 
-  body.v103-coach-open #coach .coach-head{
+  body.v11-chat-open #coach .coach-head{
     flex:0 0 auto !important;
     position:relative !important;
     inset:auto !important;
+    top:auto !important;
+    bottom:auto !important;
     margin:0 !important;
     padding:calc(10px + env(safe-area-inset-top)) 16px 10px !important;
     transform:none !important;
     background:rgba(13,17,23,.98) !important;
     border-bottom:1px solid rgba(255,255,255,.07) !important;
-    backdrop-filter:blur(16px) !important;
-    -webkit-backdrop-filter:blur(16px) !important;
-    z-index:3 !important;
+    backdrop-filter:blur(14px) !important;
+    -webkit-backdrop-filter:blur(14px) !important;
+    z-index:2 !important;
     box-sizing:border-box !important;
   }
 
-  /* The only scrolling element */
-  body.v103-coach-open #coach .coach-scroll-pane{
+  body.v11-chat-open #coach .v11-coach-scroller{
     flex:1 1 auto !important;
     min-height:0 !important;
     width:100% !important;
-    overflow-y:auto !important;
     overflow-x:hidden !important;
+    overflow-y:auto !important;
     -webkit-overflow-scrolling:touch !important;
     overscroll-behavior-y:contain !important;
     touch-action:pan-y !important;
-    padding:12px 16px 16px !important;
+    scrollbar-width:none;
     box-sizing:border-box !important;
-    scroll-behavior:auto !important;
   }
 
-  body.v103-coach-open #coach .coach-thread{
+  body.v11-chat-open #coach .v11-coach-scroller::-webkit-scrollbar{
+    display:none;
+  }
+
+  /* Bottom-align short conversations without fake fixed-height spacers.
+     When content grows beyond the viewport, normal scrolling takes over. */
+  body.v11-chat-open #coach .v11-content-bottom{
+    min-height:100% !important;
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:flex-end !important;
+    gap:0 !important;
+    padding:12px 16px 14px !important;
+    box-sizing:border-box !important;
+  }
+
+  body.v11-chat-open #coach .coach-thread{
     display:flex !important;
     flex-direction:column !important;
     gap:10px !important;
     width:100% !important;
-    height:auto !important;
     min-height:0 !important;
+    height:auto !important;
     max-height:none !important;
     margin:0 !important;
     padding:0 !important;
     overflow:visible !important;
-  }
-
-  body.v103-coach-open #coach #setupNote,
-  body.v103-coach-open #coach #coachWelcome,
-  body.v103-coach-open #coach .quick-prompts,
-  body.v103-coach-open #coach #proposalArea,
-  body.v103-coach-open #coach .proposal-wrap,
-  body.v103-coach-open #coach .proposal-card,
-  body.v103-coach-open #coach #proposalBtn{
-    position:static !important;
-    inset:auto !important;
-    transform:none !important;
-    width:100% !important;
-    max-height:none !important;
-    overflow:visible !important;
     box-sizing:border-box !important;
   }
 
-  body.v103-coach-open #coach #proposalArea{
-    margin:12px 0 0 !important;
+  body.v11-chat-open #coach #setupNote,
+  body.v11-chat-open #coach #coachWelcome,
+  body.v11-chat-open #coach .quick-prompts,
+  body.v11-chat-open #coach #proposalArea,
+  body.v11-chat-open #coach .proposal-wrap,
+  body.v11-chat-open #coach .proposal-card,
+  body.v11-chat-open #coach #proposalBtn{
+    position:static !important;
+    inset:auto !important;
+    float:none !important;
+    width:100% !important;
+    min-height:0 !important;
+    height:auto !important;
+    max-height:none !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    overflow:visible !important;
+    transform:none !important;
+    box-sizing:border-box !important;
+  }
+
+  body.v11-chat-open #coach #proposalArea{
+    margin-top:12px !important;
     padding:0 !important;
   }
 
-  body.v103-coach-open #coach #proposalBtn{
-    display:block;
-    margin:14px 0 6px !important;
+  body.v11-chat-open #coach #proposalBtn{
+    margin:14px 0 2px !important;
     z-index:auto !important;
   }
 
-  body.v103-coach-open #coach #coachBottomSentinel{
-    display:block !important;
+  body.v11-chat-open #coach .v11-bottom-anchor{
+    flex:0 0 auto !important;
     width:100% !important;
     height:1px !important;
     margin:0 !important;
     padding:0 !important;
   }
 
-  /* Composer is NOT positioned. Flex keeps it at bottom naturally. */
-  body.v103-coach-open #coach .coach-composer{
+  /* Critical: normal flex child, not fixed, absolute, or sticky. */
+  body.v11-chat-open #coach .coach-composer{
     flex:0 0 auto !important;
     position:relative !important;
     inset:auto !important;
+    top:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    left:auto !important;
     width:100% !important;
+    min-height:0 !important;
+    max-height:none !important;
     margin:0 !important;
     padding:8px 14px calc(8px + env(safe-area-inset-bottom)) !important;
     transform:none !important;
+    overflow:visible !important;
     background:rgba(13,17,23,.99) !important;
     border-top:1px solid rgba(255,255,255,.07) !important;
-    backdrop-filter:blur(16px) !important;
-    -webkit-backdrop-filter:blur(16px) !important;
-    z-index:4 !important;
     box-sizing:border-box !important;
+    z-index:2 !important;
   }
 
-  body.v103-coach-open.v103-keyboard #coach .coach-composer{
+  body.v11-chat-open.v11-keyboard #coach .coach-composer{
     padding-bottom:8px !important;
   }
 
-  body.v103-coach-open #coach .coach-inputrow{
+  body.v11-chat-open #coach .coach-inputrow{
     display:grid !important;
     grid-template-columns:minmax(0,1fr) auto !important;
-    gap:8px !important;
     align-items:end !important;
+    gap:8px !important;
     width:100% !important;
     margin:0 !important;
     padding:0 !important;
     box-sizing:border-box !important;
   }
 
-  body.v103-coach-open #coach .coach-input{
+  body.v11-chat-open #coach .coach-input{
+    display:block !important;
     width:100% !important;
     min-width:0 !important;
     min-height:46px !important;
     height:46px;
     max-height:108px !important;
     margin:0 !important;
-    padding:12px 13px !important;
+    padding:11px 13px !important;
     resize:none !important;
     overflow-y:auto !important;
     font-size:16px !important;
-    line-height:1.35 !important;
+    line-height:1.4 !important;
     box-sizing:border-box !important;
   }
 
-  body.v103-coach-open #coach .coach-send{
-    height:46px !important;
+  body.v11-chat-open #coach .coach-send{
     min-width:72px !important;
+    height:46px !important;
     margin:0 !important;
     align-self:end !important;
   }
 
-  body.v103-keyboard .nav{
-    display:none !important;
-  }
-}
-
-
-/* =========================================================
-   V10.3.1 iOS keyboard stability
-   Do not fix the whole coach screen.
-   Let visualViewport control only the flex shell height.
-   ========================================================= */
-:root{
-  --v1031-chat-h:100dvh;
-  --v1031-nav-h:74px;
-}
-
-@media(max-width:700px){
-
-  html,body{
-    overscroll-behavior:none;
-  }
-
-  body.v103-coach-open{
-    overflow:hidden !important;
-    height:100dvh !important;
-  }
-
-  /* Important: no fixed positioning on the whole coach screen. */
-  body.v103-coach-open #coach.active{
-    display:block !important;
-    position:relative !important;
-    inset:auto !important;
-    left:auto !important;
-    right:auto !important;
-    top:auto !important;
-    bottom:auto !important;
-    width:100% !important;
-    max-width:none !important;
-    height:calc(var(--v1031-chat-h) - var(--v1031-nav-h)) !important;
-    min-height:0 !important;
-    margin:0 !important;
-    padding:0 !important;
-    overflow:hidden !important;
-    background:#0d1117 !important;
-    z-index:1 !important;
-    transform:none !important;
-  }
-
-  body.v103-coach-open.v103-keyboard #coach.active{
-    height:var(--v1031-chat-h) !important;
-  }
-
-  body.v103-coach-open #coach .coach-page{
-    display:flex !important;
-    flex-direction:column !important;
-    position:relative !important;
-    inset:auto !important;
-    width:min(100%,620px) !important;
-    height:100% !important;
-    min-height:0 !important;
-    max-height:none !important;
-    margin:0 auto !important;
-    padding:0 !important;
-    overflow:hidden !important;
-    transform:none !important;
-    box-sizing:border-box !important;
-  }
-
-  body.v103-coach-open #coach .coach-head{
-    flex:0 0 auto !important;
-    position:relative !important;
-    inset:auto !important;
-    transform:none !important;
-  }
-
-  body.v103-coach-open #coach .coach-scroll-pane{
-    flex:1 1 auto !important;
-    min-height:0 !important;
-    position:relative !important;
-    inset:auto !important;
-    overflow-y:auto !important;
-    overflow-x:hidden !important;
-    -webkit-overflow-scrolling:touch !important;
-    touch-action:pan-y !important;
-  }
-
-  body.v103-coach-open #coach .coach-composer{
-    flex:0 0 auto !important;
-    position:relative !important;
-    inset:auto !important;
-    bottom:auto !important;
-    transform:none !important;
-  }
-
-  body.v103-keyboard .nav{
-    display:none !important;
-  }
-}
-
-
-/* V10.3.2 iOS focus/pan compensation */
-:root{
-  --v1032-vv-top:0px;
-  --v1032-vv-h:100dvh;
-}
-@media(max-width:700px){
-  body.v103-coach-open.v103-keyboard #coach.active{
-    height:var(--v1032-vv-h) !important;
-    transform:translateY(var(--v1032-vv-top)) !important;
-    transform-origin:top left !important;
-  }
-  body.v103-coach-open:not(.v103-keyboard) #coach.active{
-    transform:none !important;
-  }
-  body.v103-keyboard .nav{
+  body.v11-keyboard .nav{
     display:none !important;
   }
 }
@@ -1395,7 +1037,7 @@ window.addEventListener("DOMContentLoaded", function(){
 <div id="onboardScreen" class="onboard-screen">
   <div class="onboard-card">
     <div class="brand-row" style="margin-bottom:8px">
-      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1032" alt="小臭">
+      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1100" alt="小臭">
       <div>
         <h2 style="margin:0">先告诉我一点基本信息</h2>
         <div class="small">填完后直接进入小臭，由 AI 继续跟你聊并制定方案。</div>
@@ -1529,22 +1171,24 @@ window.addEventListener("DOMContentLoaded", function(){
         <span class="coach-online">在线</span>
       </div>
     </div>
-    <div id="coachScrollPane" class="coach-scroll-pane">
-      <div id="setupNote" class="setup-note" style="display:none">先和 AI 把方案聊清楚。确认计划后，训练主页才会正式开放。</div>
-      <div id="coachWelcome" class="coach-welcome">
-        <strong>先从你的真实情况开始</strong>
-        <p>你可以直接说目标、训练时间、器械条件、最想改善的部位，或者最近遇到的问题。AI 会先追问必要信息，不会立刻把方案写死。</p>
+    <div id="v11CoachScroller" class="v11-coach-scroller">
+      <div class="v11-content-bottom">
+        <div id="setupNote" class="setup-note" style="display:none">先和 AI 把方案聊清楚。确认计划后，训练主页才会正式开放。</div>
+        <div id="coachWelcome" class="coach-welcome">
+          <strong>先从你的真实情况开始</strong>
+          <p>你可以直接说目标、训练时间、器械条件、最想改善的部位，或者最近遇到的问题。AI 会先追问必要信息，不会立刻把方案写死。</p>
+        </div>
+        <div class="quick-prompts">
+          <button class="quick-prompt" onclick="useQuickPrompt('我想减脂，同时尽量保持肌肉。')">减脂保肌</button>
+          <button class="quick-prompt" onclick="useQuickPrompt('帮我根据每周可训练时间安排训练结构。')">安排训练周</button>
+          <button class="quick-prompt" onclick="useQuickPrompt('我有一些动作做起来不舒服，想找替代动作。')">动作替代</button>
+          <button class="quick-prompt" onclick="useQuickPrompt('我想重新制定一个新的训练计划。')">重新规划</button>
+        </div>
+        <div id="coachThread" class="coach-thread"></div>
+        <div id="proposalArea" class="proposal-wrap"></div>
+        <button id="proposalBtn" class="proposal-cta" onclick="generateProposal()">生成详细 Proposal</button>
+        <div id="v11BottomAnchor" class="v11-bottom-anchor" aria-hidden="true"></div>
       </div>
-      <div class="quick-prompts">
-        <button class="quick-prompt" onclick="useQuickPrompt('我想减脂，同时尽量保持肌肉。')">减脂保肌</button>
-        <button class="quick-prompt" onclick="useQuickPrompt('帮我根据每周可训练时间安排训练结构。')">安排训练周</button>
-        <button class="quick-prompt" onclick="useQuickPrompt('我有一些动作做起来不舒服，想找替代动作。')">动作替代</button>
-        <button class="quick-prompt" onclick="useQuickPrompt('我想重新制定一个新的训练计划。')">重新规划</button>
-      </div>
-      <div id="coachThread" class="coach-thread"></div>
-      <div id="proposalArea" class="proposal-wrap"></div>
-      <button id="proposalBtn" class="proposal-cta" onclick="generateProposal()">生成详细 Proposal</button>
-      <div id="coachBottomSentinel" aria-hidden="true"></div>
     </div>
     <div class="coach-composer">
       <div class="coach-inputrow">
@@ -2676,7 +2320,7 @@ async function routeUserFlow(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=1032";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1100";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}}
     document.getElementById("onboardScreen").classList.add("show");
@@ -2703,7 +2347,7 @@ async function routeUserFlow(){
 
   revealApp();
   const ci=document.getElementById("coachAvatar");
-  if(ci)ci.src="./xiaochou.jpg?v=1032";
+  if(ci)ci.src="./xiaochou.jpg?v=1100";
 
   appBrandLoaded=false;
   updateDynamicPlanTitle(true).catch(console.error);
@@ -2810,7 +2454,7 @@ function appendCoachBubble(role,content,{pending=false}={}){
     row.className="msg-row assistant";
     const img=document.createElement("img");
     img.className="msg-agent-avatar";
-    img.src="./xiaochou.jpg?v=1032";
+    img.src="./xiaochou.jpg?v=1100";
     img.alt="小臭";
     const msg=document.createElement("div");
     msg.className="msg assistant"+(pending?" pending":"");
@@ -2837,55 +2481,6 @@ function renderCachedCoachImmediately(){
   const cached=getCoachCache();
   if(cached?.length){renderCoachMessages(cached);coachScrollToBottom("auto")}
 }
-function updateChatViewport(){
-  const vv=window.visualViewport;
-  const viewportH=vv?.height||window.innerHeight;
-  const offsetTop=vv?.offsetTop||0;
-
-  document.documentElement.style.setProperty("--chat-vvh",`${viewportH}px`);
-
-  // iOS Safari overlays the keyboard on the layout viewport.
-  // This value is the covered area at the bottom of the layout viewport.
-  const covered=Math.max(0,window.innerHeight-(viewportH+offsetTop));
-  document.documentElement.style.setProperty("--keyboard-offset",`${covered}px`);
-
-  const keyboardOpen=covered>120;
-  document.body.classList.toggle("keyboard-open",keyboardOpen);
-}
-if(window.visualViewport){
-  visualViewport.addEventListener("resize",updateChatViewport);
-  visualViewport.addEventListener("scroll",updateChatViewport);
-}
-window.addEventListener("resize",updateChatViewport);
-updateChatViewport();
-
-function syncCoachComposerHeight(){
-  const composer=document.querySelector("#coach .coach-composer");
-  if(!composer)return;
-  const h=Math.ceil(composer.getBoundingClientRect().height);
-  if(h>0)document.documentElement.style.setProperty("--coach-composer-h",`${h}px`);
-}
-
-function scrollLatestCoachIntoView(behavior="smooth"){
-  if(window.matchMedia("(max-width:700px)").matches){
-    const box=document.getElementById("coachThread");
-    const last=box?.lastElementChild;
-    if(last){
-      requestAnimationFrame(()=>{
-        last.scrollIntoView({behavior,block:"end",inline:"nearest"});
-      });
-    }
-    return;
-  }
-  coachScrollToBottom(behavior);
-}
-
-window.addEventListener("load",()=>{
-  syncCoachComposerHeight();
-  updateChatViewport();
-});
-
-
 async function loadCoachHistory(){
   if(!currentUser||!sb)return;
   const {data,error}=await sb.from("coach_conversations")
@@ -3538,10 +3133,8 @@ function showPage(id){
   const page=document.getElementById(id);
   if(page)page.classList.add("active");
 
-  document.body.classList.toggle("v103-coach-open",isCoach);
-  if(!isCoach){
-    document.body.classList.remove("v103-keyboard");
-  }
+  document.body.classList.toggle("v11-chat-open",isCoach);
+  if(!isCoach)document.body.classList.remove("v11-keyboard");
 
   document.querySelectorAll(".nav button").forEach(
     x=>x.classList.toggle("active",x.dataset.page===id)
@@ -3554,16 +3147,14 @@ function showPage(id){
 
   if(isCoach){
     setCoachAvatar();
-    v103Init();
-    v103RememberBaseline();
-    v103SyncViewport();
-
+    v11InitChat();
+    v11SyncViewport();
     renderCachedCoachImmediately();
     loadCoachHistory().catch(console.error);
 
     requestAnimationFrame(()=>{
-      v103SyncViewport();
-      v103ScrollBottom("auto",true);
+      v11SyncViewport();
+      v11RestoreScroll();
     });
     return;
   }
@@ -3596,32 +3187,7 @@ function resetData(){
  }
 }
 
-(function initCoachInputUX(){
-  const input=document.getElementById("coachInput");
-  if(!input)return;
-  input.addEventListener("input",()=>{
-    input.style.height="auto";
-    input.style.height=Math.min(input.scrollHeight,104)+"px";
-    syncCoachComposerHeight();
-  });
-  input.addEventListener("focus",()=>{
-    updateChatViewport();
-    syncCoachComposerHeight();
-    setTimeout(()=>scrollLatestCoachIntoView("auto"),120);
-  });
-  input.addEventListener("blur",()=>{
-    setTimeout(()=>{
-      updateChatViewport();
-      syncCoachComposerHeight();
-    },80);
-  });
-  input.addEventListener("keydown",e=>{
-    if(e.key==="Enter"&&!e.shiftKey){
-      e.preventDefault();
-      sendCoachMessage();
-    }
-  });
-})();
+
 
 
 /* ===== V10.0.1 stable overrides ===== */
@@ -3930,9 +3496,8 @@ sendCoachMessage=async function(){
   if(!text)return;
 
   input.value="";
-  input.style.height="46px";
-  try{localStorage.removeItem(V103_DRAFT_KEY)}catch(e){}
-  v103SyncViewport();
+  input.style.height="";
+  syncCoachComposerHeight();
   v10SendCoachText(text);
 };
 
@@ -3949,7 +3514,7 @@ routeUserFlow=async function(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=1032";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1100";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){
       try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}
@@ -4008,154 +3573,169 @@ afterLogin=async function(){
 };
 
 
-/* ===== V10.3 mature mobile chat runtime ===== */
-let v103StickBottom=true;
-let v103Initialized=false;
-let v103BaselineHeight=0;
-let v103LastHeight=0;
-const V103_DRAFT_KEY="kyleFitCoachDraftV1032";
+/* ================= V11 CHAT RUNTIME ================= */
+const V11_DRAFT_KEY="kyleFitCoachDraftV11";
+const V11_SCROLL_KEY="kyleFitCoachScrollV11";
 
-function v103Pane(){
-  return document.getElementById("coachScrollPane");
+let v11Initialized=false;
+let v11StickBottom=true;
+let v11LastHeight=0;
+let v11ViewportRAF=0;
+let v11ViewportUntil=0;
+let v11StreamScrollRAF=0;
+
+function v11Scroller(){
+  return document.getElementById("v11CoachScroller");
 }
 
-function v103NearBottom(threshold=100){
-  const pane=v103Pane();
-  if(!pane)return true;
-  return pane.scrollHeight-pane.scrollTop-pane.clientHeight<=threshold;
+function v11NearBottom(threshold=100){
+  const sc=v11Scroller();
+  if(!sc)return true;
+  return sc.scrollHeight-sc.scrollTop-sc.clientHeight<=threshold;
 }
 
-function v103ScrollBottom(behavior="auto",force=false){
-  const pane=v103Pane();
-  if(!pane)return;
-  if(!force&&!v103StickBottom)return;
-  requestAnimationFrame(()=>pane.scrollTo({top:pane.scrollHeight,behavior}));
+function v11ScrollBottom(behavior="auto",force=false){
+  const sc=v11Scroller();
+  if(!sc)return;
+  if(!force&&!v11StickBottom)return;
+
+  requestAnimationFrame(()=>{
+    sc.scrollTo({top:sc.scrollHeight,behavior});
+  });
 }
 
-function v103CurrentVisualHeight(){
-  return Math.max(280,Math.round(window.visualViewport?.height||window.innerHeight));
+function v11SaveScroll(){
+  const sc=v11Scroller();
+  if(!sc)return;
+  try{
+    localStorage.setItem(V11_SCROLL_KEY,String(sc.scrollTop));
+  }catch(e){}
 }
 
-function v103RememberBaseline(){
-  const h=v103CurrentVisualHeight();
-  if(!document.body.classList.contains("v103-keyboard")){
-    v103BaselineHeight=Math.max(v103BaselineHeight,h);
-  }
+function v11RestoreScroll(){
+  const sc=v11Scroller();
+  if(!sc)return;
+
+  let saved=null;
+  try{
+    const raw=localStorage.getItem(V11_SCROLL_KEY);
+    if(raw!==null)saved=Number(raw);
+  }catch(e){}
+
+  requestAnimationFrame(()=>{
+    if(Number.isFinite(saved) && saved>=0 && saved < sc.scrollHeight-sc.clientHeight-80){
+      sc.scrollTop=saved;
+      v11StickBottom=false;
+    }else{
+      v11StickBottom=true;
+      sc.scrollTop=sc.scrollHeight;
+    }
+  });
 }
 
-function v103SyncViewport(){
+function v11SyncViewport(){
   if(!window.matchMedia("(max-width:700px)").matches)return;
 
   const vv=window.visualViewport;
   const h=Math.max(280,Math.round(vv?.height||window.innerHeight));
-  const vvTop=Math.max(0,Math.round(vv?.offsetTop||0));
   const nav=document.querySelector(".nav");
-  const navH=Math.ceil(nav?.getBoundingClientRect().height||74);
+  const navH=Math.ceil(nav?.getBoundingClientRect().height||76);
   const input=document.getElementById("coachInput");
-  const focused=document.activeElement===input;
+  const keyboardOpen=document.activeElement===input;
 
-  if(!focused && h>v103BaselineHeight) v103BaselineHeight=h;
-  if(!v103BaselineHeight) v103BaselineHeight=h;
+  document.documentElement.style.setProperty("--v11-app-height",h+"px");
+  document.documentElement.style.setProperty("--v11-nav-height",navH+"px");
+  document.body.classList.toggle("v11-keyboard",keyboardOpen);
 
-  /* iOS can report stale viewport metrics on the first focus frame.
-     Focus itself enters keyboard mode immediately. */
-  document.body.classList.toggle("v103-keyboard",focused);
-
-  document.documentElement.style.setProperty("--v1031-chat-h",h+"px");
-  document.documentElement.style.setProperty("--v1031-nav-h",navH+"px");
-  document.documentElement.style.setProperty("--v1032-vv-h",h+"px");
-  document.documentElement.style.setProperty("--v1032-vv-top",focused?vvTop+"px":"0px");
-
-  if(v103LastHeight!==h){
-    v103LastHeight=h;
-    if(v103StickBottom) requestAnimationFrame(()=>v103ScrollBottom("auto",true));
+  if(h!==v11LastHeight){
+    v11LastHeight=h;
+    if(v11StickBottom){
+      requestAnimationFrame(()=>v11ScrollBottom("auto",true));
+    }
   }
 }
 
-function v103TrackViewport(ms=700){
-  const end=performance.now()+ms;
+/* iOS can deliver visualViewport changes over several frames.
+   We ONLY re-read height; we never move the composer manually. */
+function v11TrackViewport(ms=500){
+  v11ViewportUntil=performance.now()+ms;
+  if(v11ViewportRAF)return;
+
   const tick=()=>{
-    v103SyncViewport();
-    if(performance.now()<end)requestAnimationFrame(tick);
+    v11ViewportRAF=0;
+    v11SyncViewport();
+
+    if(performance.now()<v11ViewportUntil){
+      v11ViewportRAF=requestAnimationFrame(tick);
+    }
   };
-  requestAnimationFrame(tick);
+
+  v11ViewportRAF=requestAnimationFrame(tick);
 }
 
-function v103Init(){
-  if(v103Initialized)return;
-  v103Initialized=true;
+function v11ScheduleStreamFollow(){
+  if(v11StreamScrollRAF)return;
+  v11StreamScrollRAF=requestAnimationFrame(()=>{
+    v11StreamScrollRAF=0;
+    if(v11StickBottom)v11ScrollBottom("auto",true);
+  });
+}
 
-  const pane=v103Pane();
+function v11InitChat(){
+  if(v11Initialized)return;
+  v11Initialized=true;
+
+  const sc=v11Scroller();
   const input=document.getElementById("coachInput");
-  if(!pane||!input)return;
+  if(!sc||!input)return;
 
-  v103BaselineHeight=v103CurrentVisualHeight();
-
-  pane.addEventListener("scroll",()=>{
-    v103StickBottom=v103NearBottom(90);
+  sc.addEventListener("scroll",()=>{
+    v11StickBottom=v11NearBottom(90);
+    v11SaveScroll();
   },{passive:true});
 
-  pane.addEventListener("touchstart",()=>{
-    v103StickBottom=v103NearBottom(50);
+  sc.addEventListener("touchstart",()=>{
+    v11StickBottom=v11NearBottom(45);
   },{passive:true});
 
   input.addEventListener("focus",()=>{
-    v103StickBottom=v103NearBottom(150);
+    v11StickBottom=v11NearBottom(150);
 
-    /* Enter keyboard mode synchronously, before Safari finishes panning. */
-    document.body.classList.add("v103-keyboard");
-    v103SyncViewport();
+    /* Hide nav immediately. The viewport height then drives the flex layout. */
+    document.body.classList.add("v11-keyboard");
+    v11TrackViewport(650);
 
-    const composer=document.querySelector("#coach .coach-composer");
-    v103TrackViewport(1000);
-
-    [0,30,60,100,160,240,340,480,650,850,1000].forEach(ms=>{
-      setTimeout(()=>{
-        v103SyncViewport();
-
-        if(composer && document.activeElement===input){
-          const vv=window.visualViewport;
-          const vvTop=vv?.offsetTop||0;
-          const visibleBottom=vvTop+(vv?.height||window.innerHeight);
-          const r=composer.getBoundingClientRect();
-
-          /* Same correction the user's manual upward swipe currently causes. */
-          if(r.bottom > visibleBottom-2 || r.top < vvTop){
-            try{
-              composer.scrollIntoView({
-                block:"end",
-                inline:"nearest",
-                behavior:"auto"
-              });
-            }catch(e){}
-          }
-        }
-
-        if(v103StickBottom) v103ScrollBottom("auto",true);
-      },ms);
+    requestAnimationFrame(()=>{
+      v11SyncViewport();
+      if(v11StickBottom)v11ScrollBottom("auto",true);
     });
   });
 
   input.addEventListener("blur",()=>{
-    document.body.classList.remove("v103-keyboard");
-    document.documentElement.style.setProperty("--v1032-vv-top","0px");
-    [0,80,180,320,520].forEach(ms=>{
-      setTimeout(()=>{
-        v103SyncViewport();
-        v103RememberBaseline();
-      },ms);
-    });
+    document.body.classList.remove("v11-keyboard");
+    v11TrackViewport(420);
   });
 
   input.addEventListener("input",()=>{
     input.style.height="auto";
     input.style.height=Math.min(input.scrollHeight,108)+"px";
-    try{localStorage.setItem(V103_DRAFT_KEY,input.value)}catch(e){}
-    if(v103StickBottom)v103ScrollBottom("auto",true);
+
+    try{
+      localStorage.setItem(V11_DRAFT_KEY,input.value);
+    }catch(e){}
+
+    if(v11StickBottom)v11ScrollBottom("auto",true);
+  });
+
+  input.addEventListener("keydown",e=>{
+    if(e.key==="Enter"&&!e.shiftKey){
+      e.preventDefault();
+      sendCoachMessage();
+    }
   });
 
   try{
-    const draft=localStorage.getItem(V103_DRAFT_KEY)||"";
+    const draft=localStorage.getItem(V11_DRAFT_KEY)||"";
     if(draft&&!input.value){
       input.value=draft;
       input.style.height="auto";
@@ -4166,28 +3746,46 @@ function v103Init(){
 
 if(window.visualViewport){
   visualViewport.addEventListener("resize",()=>{
-    v103SyncViewport();
-    v103TrackViewport(180);
-  },{passive:true});
-
-  visualViewport.addEventListener("scroll",()=>{
-    v103SyncViewport();
+    v11SyncViewport();
+    v11TrackViewport(180);
   },{passive:true});
 }
 
-window.addEventListener("resize",()=>{
-  v103SyncViewport();
-  if(document.activeElement!==document.getElementById("coachInput")){
-    v103RememberBaseline();
-  }
-},{passive:true});
+window.addEventListener("resize",v11SyncViewport,{passive:true});
 
-coachScrollToBottom=function(behavior="smooth"){
-  v103ScrollBottom(behavior,false);
-};
+/* Existing message/proposal code calls these names.
+   Route all of it to the one scroller. */
+function updateChatViewport(){
+  v11SyncViewport();
+}
 
-scrollLatestCoachIntoView=function(behavior="smooth"){
-  v103ScrollBottom(behavior,false);
+function syncCoachComposerHeight(){
+  /* No-op by design in V11. Flexbox owns composer height. */
+}
+
+function coachScrollToBottom(behavior="smooth"){
+  v11ScheduleStreamFollow();
+}
+
+function scrollLatestCoachIntoView(behavior="smooth"){
+  v11ScheduleStreamFollow();
+}
+
+/* Final send override: draft clears locally, message still uses V10 streaming/retry. */
+sendCoachMessage=async function(){
+  if(!currentUser||!sb)return showAuth();
+
+  const input=document.getElementById("coachInput");
+  const text=input.value.trim();
+  if(!text)return;
+
+  input.value="";
+  input.style.height="46px";
+
+  try{localStorage.removeItem(V11_DRAFT_KEY)}catch(e){}
+
+  v11StickBottom=true;
+  v10SendCoachText(text);
 };
 
 document.getElementById("startDate").value=start;
@@ -4199,7 +3797,7 @@ window.addEventListener("load",()=>{
   setTimeout(()=>splash && splash.classList.add("hide"),350);
 });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1032").catch(()=>{}));
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1100").catch(()=>{}));
 }
 
 </script>
