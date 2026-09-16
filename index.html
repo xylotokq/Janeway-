@@ -706,282 +706,6 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
 }
 
 
-/* V9.9 chat UX + startup performance */
-:root{--chat-vvh:100dvh}
-#coach.active{overflow:hidden!important}
-#coach .coach-page{
-  height:calc(var(--chat-vvh) - 150px)!important;
-  min-height:0!important;
-  max-height:calc(var(--chat-vvh) - 150px)!important;
-  display:flex!important;
-  flex-direction:column!important;
-  overflow:hidden!important;
-}
-#coach .coach-head,#coach #setupNote,#coach #coachWelcome,#coach .quick-prompts,#coach #proposalArea,#coach #proposalBtn{flex:0 0 auto}
-#coach .coach-thread{
-  flex:1 1 auto!important;
-  min-height:120px!important;
-  overflow-y:auto!important;
-  overscroll-behavior:contain;
-  -webkit-overflow-scrolling:touch;
-  padding:8px 2px 12px!important;
-  scroll-behavior:smooth;
-}
-#coach .coach-composer{
-  position:relative!important;
-  bottom:auto!important;
-  flex:0 0 auto;
-  background:#0d1117!important;
-  padding:9px 0 calc(4px + env(safe-area-inset-bottom))!important;
-  z-index:20;
-}
-#coach .coach-input{
-  font-size:16px!important;
-  max-height:110px;
-  overflow-y:auto;
-}
-.msg.pending{opacity:.78}
-@media(max-width:420px){
-  #coach .coach-page{
-    height:calc(var(--chat-vvh) - 136px)!important;
-    max-height:calc(var(--chat-vvh) - 136px)!important;
-  }
-  .nav button{font-size:8.5px!important}
-}
-
-
-/* V9.9.1 chat scroll hotfix
-   Do NOT lock the whole coach page. The page can scroll normally;
-   only the message thread gets its own bounded scroll area. */
-#coach.active{
-  overflow:visible !important;
-}
-
-#coach .coach-page{
-  height:auto !important;
-  max-height:none !important;
-  min-height:calc(100dvh - 150px) !important;
-  display:block !important;
-  overflow:visible !important;
-  padding-bottom:calc(92px + env(safe-area-inset-bottom)) !important;
-}
-
-#coach .coach-thread{
-  display:flex !important;
-  flex-direction:column !important;
-  gap:9px !important;
-  height:auto !important;
-  min-height:180px !important;
-  max-height:min(46dvh,520px) !important;
-  overflow-y:auto !important;
-  overflow-x:hidden !important;
-  overscroll-behavior-y:contain !important;
-  -webkit-overflow-scrolling:touch !important;
-  touch-action:pan-y !important;
-  padding:8px 2px 14px !important;
-}
-
-#coach #proposalArea{
-  max-height:none !important;
-  overflow:visible !important;
-}
-
-#coach .coach-composer{
-  position:sticky !important;
-  bottom:calc(72px + env(safe-area-inset-bottom)) !important;
-  width:100% !important;
-  background:linear-gradient(180deg,rgba(13,17,23,0),rgba(13,17,23,.98) 20%) !important;
-  padding:18px 0 8px !important;
-  z-index:25 !important;
-}
-
-/* Ensure proposal cards themselves never become a hidden clipped viewport. */
-#coach .proposal-wrap,
-#coach .proposal-card{
-  overflow:visible !important;
-  max-height:none !important;
-}
-
-@media(max-width:420px){
-  #coach .coach-page{
-    height:auto !important;
-    max-height:none !important;
-    min-height:calc(100dvh - 138px) !important;
-  }
-  #coach .coach-thread{
-    min-height:170px !important;
-    max-height:42dvh !important;
-  }
-}
-
-
-/* V9.9.2 mobile = one scroll container only */
-@media(max-width:700px){
-
-  #coach,
-  #coach.active{
-    overflow:visible !important;
-  }
-
-  #coach .coach-page{
-    display:block !important;
-    height:auto !important;
-    min-height:0 !important;
-    max-height:none !important;
-    overflow:visible !important;
-    padding-bottom:calc(110px + env(safe-area-inset-bottom)) !important;
-  }
-
-  /* On mobile the conversation is part of the page flow.
-     No second scroll box, no reserved empty viewport. */
-  #coach .coach-thread{
-    display:flex !important;
-    flex-direction:column !important;
-    gap:9px !important;
-    height:auto !important;
-    min-height:0 !important;
-    max-height:none !important;
-    overflow:visible !important;
-    overscroll-behavior:auto !important;
-    touch-action:auto !important;
-    padding:8px 2px 10px !important;
-  }
-
-  #coach #proposalArea,
-  #coach .proposal-wrap{
-    display:block !important;
-    height:auto !important;
-    min-height:0 !important;
-    max-height:none !important;
-    overflow:visible !important;
-    margin:10px 0 14px !important;
-  }
-
-  #coach #proposalBtn{
-    display:block;
-    position:relative !important;
-    margin:14px 0 12px !important;
-  }
-
-  /* Normal document flow is more reliable with iOS keyboard than sticky
-     inside a PWA page that also has a fixed bottom nav. */
-  #coach .coach-composer{
-    position:relative !important;
-    top:auto !important;
-    right:auto !important;
-    bottom:auto !important;
-    left:auto !important;
-    width:100% !important;
-    margin:0 0 12px !important;
-    padding:4px 0 !important;
-    background:#0d1117 !important;
-    z-index:2 !important;
-  }
-
-  #coach .coach-inputrow{
-    width:100% !important;
-    box-sizing:border-box !important;
-  }
-
-  #coach .coach-input{
-    min-height:44px !important;
-    max-height:100px !important;
-    font-size:16px !important;
-  }
-}
-
-
-/* V9.9.3 - mobile chat composer behaves like a native messenger */
-:root{
-  --mobile-nav-h:72px;
-  --coach-composer-h:68px;
-  --keyboard-offset:0px;
-}
-
-@media(max-width:700px){
-  /* One page scroll only */
-  #coach,
-  #coach.active,
-  #coach .coach-page,
-  #coach .coach-thread,
-  #coach #proposalArea,
-  #coach .proposal-wrap,
-  #coach .proposal-card{
-    overflow:visible !important;
-    max-height:none !important;
-  }
-
-  #coach .coach-page{
-    display:block !important;
-    height:auto !important;
-    min-height:calc(100dvh - 120px) !important;
-    padding-bottom:calc(var(--coach-composer-h) + var(--mobile-nav-h) + env(safe-area-inset-bottom) + 32px) !important;
-  }
-
-  #coach .coach-thread{
-    display:flex !important;
-    flex-direction:column !important;
-    gap:9px !important;
-    height:auto !important;
-    min-height:0 !important;
-    touch-action:auto !important;
-  }
-
-  /* Fixed composer: above nav when keyboard closed */
-  #coach .coach-composer{
-    position:fixed !important;
-    left:50% !important;
-    right:auto !important;
-    top:auto !important;
-    bottom:calc(var(--mobile-nav-h) + env(safe-area-inset-bottom)) !important;
-    transform:translateX(-50%) !important;
-    width:min(100%,620px) !important;
-    box-sizing:border-box !important;
-    margin:0 !important;
-    padding:8px 14px !important;
-    background:rgba(13,17,23,.98) !important;
-    border-top:1px solid rgba(255,255,255,.06);
-    z-index:120 !important;
-    backdrop-filter:blur(14px);
-    -webkit-backdrop-filter:blur(14px);
-  }
-
-  #coach .coach-inputrow{
-    width:100% !important;
-    box-sizing:border-box !important;
-    margin:0 !important;
-  }
-
-  #coach .coach-input{
-    min-height:46px !important;
-    max-height:104px !important;
-    font-size:16px !important;
-    line-height:1.35 !important;
-  }
-
-  /* Keyboard open: hide app nav and pin composer to keyboard top */
-  body.keyboard-open .nav{
-    display:none !important;
-  }
-
-  body.keyboard-open #coach .coach-composer{
-    bottom:var(--keyboard-offset) !important;
-    padding-bottom:8px !important;
-  }
-
-  body.keyboard-open #coach .coach-page{
-    padding-bottom:calc(var(--coach-composer-h) + 24px) !important;
-  }
-
-  /* prevent latest bubble from sitting behind fixed composer */
-  #coach .msg,
-  #coach .msg-row,
-  #coach #proposalArea{
-    scroll-margin-bottom:calc(var(--coach-composer-h) + 24px);
-  }
-}
-
-
 /* V10.0.1 stable performance/chat layer */
 .nav button[data-page="coach"]{position:relative}
 .nav button[data-page="coach"].has-notice::after{
@@ -1053,12 +777,9 @@ body.setup-mode .coach-composer{bottom:calc(10px + env(safe-area-inset-bottom))}
 
 @media(max-width:700px){
 
-  html,body{
+  body.coach-testc-open{
     overflow:hidden !important;
     overscroll-behavior:none !important;
-  }
-
-  body.coach-testc-open{
     position:fixed !important;
     inset:0 !important;
     width:100% !important;
@@ -1299,7 +1020,7 @@ window.addEventListener("DOMContentLoaded", function(){
 <div id="onboardScreen" class="onboard-screen">
   <div class="onboard-card">
     <div class="brand-row" style="margin-bottom:8px">
-      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1111" alt="小臭">
+      <img class="brand-avatar" id="onboardAvatar" src="./xiaochou.jpg?v=1113" alt="小臭">
       <div>
         <h2 style="margin:0">先告诉我一点基本信息</h2>
         <div class="small">填完后直接进入小臭，由 AI 继续跟你聊并制定方案。</div>
@@ -2585,7 +2306,7 @@ async function routeUserFlow(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=1111";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1113";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}}
     document.getElementById("onboardScreen").classList.add("show");
@@ -2612,7 +2333,7 @@ async function routeUserFlow(){
 
   revealApp();
   const ci=document.getElementById("coachAvatar");
-  if(ci)ci.src="./xiaochou.jpg?v=1111";
+  if(ci)ci.src="./xiaochou.jpg?v=1113";
 
   appBrandLoaded=false;
   updateDynamicPlanTitle(true).catch(console.error);
@@ -2719,7 +2440,7 @@ function appendCoachBubble(role,content,{pending=false}={}){
     row.className="msg-row assistant";
     const img=document.createElement("img");
     img.className="msg-agent-avatar";
-    img.src="./xiaochou.jpg?v=1111";
+    img.src="./xiaochou.jpg?v=1113";
     img.alt="小臭";
     const msg=document.createElement("div");
     msg.className="msg assistant"+(pending?" pending":"");
@@ -3448,7 +3169,14 @@ function showPage(id){
   if(page)page.classList.add("active");
 
   document.body.classList.toggle("coach-testc-open",isCoach);
-  if(!isCoach)document.body.classList.remove("keyboard-open");
+  if(!isCoach){
+    document.body.classList.remove("keyboard-open");
+    document.body.style.position="";
+    document.body.style.inset="";
+    document.body.style.width="";
+    document.body.style.height="";
+    document.body.style.overflow="";
+  }
 
   document.querySelectorAll(".nav button").forEach(
     x=>x.classList.toggle("active",x.dataset.page===id)
@@ -3854,7 +3582,7 @@ routeUserFlow=async function(){
   if(!goals){
     setSetupMode(true);
     const img=document.getElementById("onboardAvatar");
-    if(img&&!img.src)img.src="./xiaochou.jpg?v=1111";
+    if(img&&!img.src)img.src="./xiaochou.jpg?v=1113";
     const tz=document.getElementById("goalTimezone");
     if(tz&&!tz.value){
       try{tz.value=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}
@@ -3902,12 +3630,27 @@ afterLogin=async function(){
   document.getElementById("accountEmail").textContent=currentUser?.email||"";
   setCloudStatus("同步中","sync");
 
-  v10HydrateStartupCache();
+  const hydrated=v10HydrateStartupCache();
 
-  Promise.all([
-    ensureProfile().catch(console.error),
-    routeUserFlow()
-  ]).catch(console.error);
+  ensureProfile().catch(e=>console.error("profile init",e));
+
+  try{
+    await routeUserFlow();
+  }catch(e){
+    console.error("routeUserFlow failed",e);
+
+    /* Never leave authenticated users behind app-gated. */
+    revealApp();
+    setSetupMode(false);
+
+    if(!hydrated){
+      activePlanMeta=activePlanMeta||null;
+      activePlanJSON=activePlanJSON||null;
+    }
+
+    try{showPage("home")}catch(err){console.error("home fallback",err)}
+    setCloudStatus("同步失败");
+  }
 
   setTimeout(()=>syncFromCloud().catch(console.error),0);
 };
@@ -4037,15 +3780,73 @@ function scrollLatestCoachIntoView(behavior="smooth"){
 }
 
 document.getElementById("startDate").value=start;
-renderHome();renderToday(selectedDate);renderWeights();renderStats();
-initAuth();
+
+function safeInitialRender(){
+  const jobs=[
+    ["home",()=>renderHome()],
+    ["today",()=>renderToday(selectedDate)],
+    ["weight",()=>renderWeights()],
+    ["stats",()=>renderStats()]
+  ];
+  for(const [name,fn] of jobs){
+    try{ fn(); }
+    catch(e){ console.error("initial render failed:",name,e); }
+  }
+}
+
+async function robustBootstrap(){
+  /* Auth must never be blocked by an unrelated page render error. */
+  try{
+    await initAuth();
+  }catch(e){
+    console.error("initAuth fatal",e);
+    const splash=document.getElementById("splash");
+    if(splash)splash.classList.add("hide");
+
+    if(currentUser){
+      revealApp();
+      setSetupMode(false);
+      try{showPage("home")}catch(err){console.error(err)}
+    }else{
+      try{showAuth()}catch(err){console.error(err)}
+      setAuthMessage("启动时遇到异常，请刷新页面重试。","error");
+    }
+  }
+
+  /* Static page rendering is isolated from authentication. */
+  safeInitialRender();
+}
+
+/* A phone must never sit forever on app-gated.
+   If cloud routing is unusually slow, show cached/local shell instead. */
+setTimeout(()=>{
+  const app=document.querySelector(".app");
+  const auth=document.getElementById("authScreen");
+  const onboard=document.getElementById("onboardScreen");
+
+  if(app?.classList.contains("app-gated") &&
+     !auth?.classList.contains("show") &&
+     !onboard?.classList.contains("show")){
+    console.warn("boot watchdog released app-gated");
+
+    if(currentUser){
+      revealApp();
+      setSetupMode(false);
+      try{showPage("home")}catch(e){console.error(e)}
+    }else{
+      try{showAuth()}catch(e){console.error(e)}
+    }
+  }
+},5000);
+
+robustBootstrap();
 
 window.addEventListener("load",()=>{
   const splash=document.getElementById("splash");
   setTimeout(()=>splash && splash.classList.add("hide"),350);
 });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1111").catch(()=>{}));
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=1113").catch(()=>{}));
 }
 
 </script>
