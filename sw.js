@@ -1,5 +1,5 @@
-const CACHE="kyle-fit-v11-1-3-full";
-const ASSETS=["./manifest.webmanifest","./icon-180.png","./icon-192.png","./icon-512.png","./xiaochou.jpg?v=1113"];
+const CACHE="kyle-fit-v11-1-4-full";
+const ASSETS=["./manifest.webmanifest","./icon-180.png","./icon-192.png","./icon-512.png","./xiaochou.jpg?v=1114"];
 self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE&&k.startsWith("kyle-fit")).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener("fetch",e=>{
